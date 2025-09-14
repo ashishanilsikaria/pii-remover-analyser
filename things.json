@@ -1,0 +1,21 @@
+{
+    "filetypes": {
+        "png": "image/png",
+        "jpg": "image/jpeg",
+        "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "pdf": "application/pdf",
+        "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    },
+    "entities_found": [
+        "Numbers",
+        "Name",
+        "Date",
+        "Time",
+        "IP Address",
+        "Role ID",
+        "Numerical ID",
+        "ID",
+        "Serial Number",
+        "Email"
+    ]
+}
