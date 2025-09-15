@@ -6,7 +6,7 @@
         "pdf": "application/pdf",
         "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     },
-    "entities_found": [
+    "entities_found_manually": [
         "Numbers",
         "Name",
         "Date",
