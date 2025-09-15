@@ -4,7 +4,9 @@ from custom_types import ProcessedFile, filetypes
 from pipeline import get_set_go
 import pandas as pd
 import json
-from helpers import list_to_html_ol, strip_json_formatting
+from helpers import list_to_html_ol, strip_json_formatting, my_logger
+
+
 
 st.set_page_config(page_title="Ashish", layout="wide")
 st.title("PII remover and analyser")
@@ -23,10 +25,11 @@ if uploaded_files:
         with st.spinner(f"Processing {file.name}..."):
 
             try:
-                final_data = get_set_go(file)
+                data_from_pipeline = get_set_go(file)
 
-                if final_data:
-                    stripped_data = strip_json_formatting(final_data)
+                
+                if data_from_pipeline:
+                    stripped_data = strip_json_formatting(data_from_pipeline)
                     json_data = json.loads(stripped_data)
                     results.append(
                         ProcessedFile(
