@@ -10,7 +10,7 @@ GEMINI_API_KEY = dotenv.get_key(".env", "GEMINI_API_KEY")
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
-prompt = """You are a security consultant.
+prompt_for_original_image = """You are a security consultant.
 Generate a JSON object based on a security analysis of the content of the uploaded file.
 The JSON object must have the following structure:
 1.  A top-level key named "file_description". Its value must be a JSON object containing:
@@ -28,6 +28,8 @@ Here is the exact format to follow:
   ]
 }"""
 
+prompt_for_image_analysis = """You are a security consultant. Analyse the image and provide insights. Don't add any additional text."""
+
 
 def analyze_uploaded_image_with_gemini(input_file, file_type):
     image_bytes = input_file.getvalue()
@@ -35,7 +37,7 @@ def analyze_uploaded_image_with_gemini(input_file, file_type):
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=[
-            prompt,
+            prompt_for_original_image,
             types.Part.from_bytes(
                 data=image_bytes,
                 mime_type=file_type,
@@ -62,14 +64,14 @@ def analyze_uploaded_image_with_gemini(input_file, file_type):
 #     return response.text
 
 
-# # using raw data
-# def analyze_data_with_gemini(raw_data):
-#     response = client.models.generate_content(
-#         model="gemini-2.5-flash",
-#         contents=[f"Analyze the following data and provide insights: {raw_data}"],
-#         config=types.GenerateContentConfig(
-#             thinking_config=types.ThinkingConfig(thinking_budget=0)
-#         ),
-#     )
+# using raw data
+def analyze_image_bytes_with_gemini(image_bytes):
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=[f"{prompt_for_image_analysis} {image_bytes}"],
+        config=types.GenerateContentConfig(
+            thinking_config=types.ThinkingConfig(thinking_budget=0)
+        ),
+    )
 
-#     return response.text
+    return response.text

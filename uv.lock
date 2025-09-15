@@ -1237,6 +1237,7 @@ dependencies = [
     { name = "presidio-analyzer" },
     { name = "presidio-anonymizer" },
     { name = "presidio-image-redactor" },
+    { name = "pypdf2" },
     { name = "python-pptx" },
     { name = "st-annotated-text" },
     { name = "streamlit" },
@@ -1254,6 +1255,7 @@ requires-dist = [
     { name = "presidio-analyzer", specifier = ">=2.2.360" },
     { name = "presidio-anonymizer", specifier = ">=2.2.360" },
     { name = "presidio-image-redactor", specifier = ">=0.0.57" },
+    { name = "pypdf2", specifier = ">=3.0.1" },
     { name = "python-pptx", specifier = ">=1.0.2" },
     { name = "st-annotated-text", specifier = ">=4.0.2" },
     { name = "streamlit", specifier = ">=1.49.1" },
@@ -1584,6 +1586,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/98/c9/b4594e6a81371dfa9eb7a2c110ad682acf985d96115ae8b25a1d63b4bf3b/pyparsing-3.2.4.tar.gz", hash = "sha256:fff89494f45559d0f2ce46613b419f632bbb6afbdaed49696d322bcf98a58e99", size = 1098809, upload-time = "2025-09-13T05:47:19.732Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/53/b8/fbab973592e23ae313042d450fc26fa24282ebffba21ba373786e1ce63b4/pyparsing-3.2.4-py3-none-any.whl", hash = "sha256:91d0fcde680d42cd031daf3a6ba20da3107e08a75de50da58360e7d94ab24d36", size = 113869, upload-time = "2025-09-13T05:47:17.863Z" },
+]
+
+[[package]]
+name = "pypdf2"
+version = "3.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/9f/bb/18dc3062d37db6c491392007dfd1a7f524bb95886eb956569ac38a23a784/PyPDF2-3.0.1.tar.gz", hash = "sha256:a74408f69ba6271f71b9352ef4ed03dc53a31aa404d29b5d31f53bfecfee1440", size = 227419, upload-time = "2022-12-31T10:36:13.13Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8e/5e/c86a5643653825d3c913719e788e41386bee415c2b87b4f955432f2de6b2/pypdf2-3.0.1-py3-none-any.whl", hash = "sha256:d16e4205cfee272fbdc0568b68d82be796540b1537508cef59388f839c191928", size = 232572, upload-time = "2022-12-31T10:36:10.327Z" },
 ]
 
 [[package]]

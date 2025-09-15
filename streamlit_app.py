@@ -4,7 +4,7 @@ from custom_types import ProcessedFile, filetypes
 from pipeline import get_set_go
 import pandas as pd
 
-from helpers import list_to_html_ol, strip_json_formatting, my_logger
+from helpers import list_to_html_ol, my_logger
 
 
 st.set_page_config(page_title="Ashish", layout="wide")
@@ -29,20 +29,20 @@ if uploaded_files:
                 
 
                 # when response in json
-                # if data_from_pipeline:
-                #     stripped_data = strip_json_formatting(data_from_pipeline)
-                #     json_data = json.loads(stripped_data)
-                #     results.append(
-                #         ProcessedFile(
-                #             file_name=file.name,
-                #             file_type=filetypes[file.type],
-                #             file_heading=json_data["file_description"]["heading"],
-                #             file_description=json_data["file_description"][
-                #                 "description"
-                #             ],
-                #             key_findings=json_data["key_findings"],
-                #         )
-                #     )
+                if data_from_pipeline:
+                    # stripped_data = strip_json_formatting(data_from_pipeline)
+                    # json_data = json.loads(stripped_data)
+                    results.append(
+                        ProcessedFile(
+                            file_name=file.name,
+                            file_type=filetypes[file.type],
+                            file_heading=data_from_pipeline["file_description"]["heading"],
+                            file_description=data_from_pipeline["file_description"][
+                                "description"
+                            ],
+                            key_findings=data_from_pipeline["key_findings"],
+                        )
+                    )
 
             except Exception as e:
                 st.error(f"Error processing {file.name}: {e}")

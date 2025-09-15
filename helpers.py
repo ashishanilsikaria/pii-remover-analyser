@@ -1,5 +1,6 @@
 import logging
 from pptx import Presentation
+from PyPDF2 import PdfReader
 
 # my_logger.debug('This is a debug message.')
 # my_logger.info('This is an informational message.')
@@ -17,19 +18,19 @@ def extract_pptx(file):
         for shape in slide.shapes:
             # Text
             if shape.has_text_frame:
-                for p in shape.text_frame.paragraphs: # type: ignore
+                for p in shape.text_frame.paragraphs:  # type: ignore
                     content["text"].append(p.text)
 
             # Tables
             if shape.has_table:
                 table_data = []
-                for row in shape.table.rows: # type: ignore
+                for row in shape.table.rows:  # type: ignore
                     table_data.append([cell.text for cell in row.cells])
                 content["tables"].append(table_data)
 
             # Images
             if shape.shape_type == 13:  # Picture type
-                image = shape.image # type: ignore
+                image = shape.image  # type: ignore
                 image_bytes = image.blob
                 ext = image.ext
                 content["images"].append((image_bytes, ext))
@@ -37,7 +38,13 @@ def extract_pptx(file):
     return content
 
 
+def extract_text_from_pdf(file):
 
+    reader = PdfReader(file)
+    text = ""
+    for page in reader.pages:
+        text += page.extract_text() + "\n"
+    return text
 
 
 def list_to_html_ol(cell):
