@@ -26,23 +26,22 @@ if uploaded_files:
             try:
                 data_from_pipeline = get_set_go(file)
                 # st.write(data_from_pipeline)
-                
 
                 # when response in json
-                if data_from_pipeline:
-                    # stripped_data = strip_json_formatting(data_from_pipeline)
-                    # json_data = json.loads(stripped_data)
-                    results.append(
-                        ProcessedFile(
-                            file_name=file.name,
-                            file_type=filetypes[file.type],
-                            file_heading=data_from_pipeline["file_description"]["heading"],
-                            file_description=data_from_pipeline["file_description"][
-                                "description"
-                            ],
-                            key_findings=data_from_pipeline["key_findings"],
-                        )
-                    )
+                # if data_from_pipeline:
+                # stripped_data = strip_json_formatting(data_from_pipeline)
+                # json_data = json.loads(stripped_data)
+                # results.append(
+                #     ProcessedFile(
+                #         file_name=file.name,
+                #         file_type=filetypes[file.type],
+                #         file_heading=data_from_pipeline["file_description"]["heading"],
+                #         file_description=data_from_pipeline["file_description"][
+                #             "description"
+                #         ],
+                #         key_findings=data_from_pipeline["key_findings"],
+                #     )
+                # )
 
             except Exception as e:
                 st.error(f"Error processing {file.name}: {e}")

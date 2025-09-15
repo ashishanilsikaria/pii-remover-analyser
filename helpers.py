@@ -1,6 +1,8 @@
 import logging
 from pptx import Presentation
 from PyPDF2 import PdfReader
+from PIL import Image
+from io import BytesIO
 
 # my_logger.debug('This is a debug message.')
 # my_logger.info('This is an informational message.')
@@ -36,6 +38,14 @@ def extract_pptx(file):
                 content["images"].append((image_bytes, ext))
 
     return content
+
+
+# def convert_images(image_list):
+#     results = []
+#     for blob in image_list:
+#         img = Image.open(BytesIO(blob))  # working image object
+#         results.append({"image": img})
+#     return results
 
 
 def extract_text_from_pdf(file):

@@ -1,6 +1,6 @@
 from google import genai
 from google.genai import types
-
+import io
 
 import dotenv
 
@@ -31,9 +31,8 @@ Here is the exact format to follow:
 prompt_for_image_analysis = """You are a security consultant. Analyse the image and provide insights. Don't add any additional text."""
 
 
-def analyze_uploaded_image_with_gemini(input_file, file_type):
+def analyze_image_with_gemini(input_file, file_type):
     image_bytes = input_file.getvalue()
-    # uploaded_file = client.files.upload(file=input_file.getvalue)
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=[
@@ -51,6 +50,27 @@ def analyze_uploaded_image_with_gemini(input_file, file_type):
     return response.text
 
 
+def analyze_embedded_image_with_gemini(image):
+    buf = io.BytesIO()
+    image.save(buf, format="PNG")
+    data = buf.getvalue()
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=[
+            prompt_for_image_analysis,
+            genai.types.Part.from_bytes(
+                data=data,
+                mime_type="image/png"
+            ),
+        ],
+        config=genai.types.GenerateContentConfig(
+            thinking_config=genai.types.ThinkingConfig(thinking_budget=0)
+        ),
+    )
+    return response
+
+
 # # using bytes
 # def analyze_image_with_gemini_direct(image_bytes):
 #     response = client.models.generate_content(
@@ -65,13 +85,13 @@ def analyze_uploaded_image_with_gemini(input_file, file_type):
 
 
 # using raw data
-def analyze_image_bytes_with_gemini(image_bytes):
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=[f"{prompt_for_image_analysis} {image_bytes}"],
-        config=types.GenerateContentConfig(
-            thinking_config=types.ThinkingConfig(thinking_budget=0)
-        ),
-    )
+# def analyze_image_bytes_with_gemini(image_bytes):
+#     response = client.models.generate_content(
+#         model="gemini-2.5-flash",
+#         contents=[f"{prompt_for_image_analysis} {image_bytes}"],
+#         config=types.GenerateContentConfig(
+#             thinking_config=types.ThinkingConfig(thinking_budget=0)
+#         ),
+#     )
 
-    return response.text
+#     return response.text

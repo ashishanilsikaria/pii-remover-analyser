@@ -1,16 +1,19 @@
 # from utilities.gemini_data_analyzer import analyze_image_with_gemini
 import pandas as pd
 from gemini_data_analyzer import (
-    analyze_uploaded_image_with_gemini,
-    analyze_image_bytes_with_gemini,
+    analyze_image_with_gemini,
+    analyze_embedded_image_with_gemini,
 )
 from helpers import (
     my_logger,
     extract_pptx,
     strip_json_formatting,
     extract_text_from_pdf,
+    # convert_images,
 )
 import json
+from PIL import Image
+import io
 
 
 def get_set_go(input_file) -> dict:
@@ -23,7 +26,7 @@ def get_set_go(input_file) -> dict:
 
     if file_type in ["image/png", "image/jpg", "image/jpeg"]:
 
-        analyzed_text_json = analyze_uploaded_image_with_gemini(input_file, file_type)
+        analyzed_text_json = analyze_image_with_gemini(input_file, file_type)
         stripped_data = strip_json_formatting(analyzed_text_json)
         json_data = json.loads(stripped_data)
         return json_data
@@ -39,13 +42,25 @@ def get_set_go(input_file) -> dict:
     ]:
 
         extracted_content_from_pptx = extract_pptx(input_file)
-        my_logger.info(
-            f"Extracted text from PPTX:\n{extracted_content_from_pptx['text']}, \nTables: {extracted_content_from_pptx['tables']}"
-        )
-        for img_bytes in extracted_content_from_pptx["images"]:
-            image_analysis_by_ai = analyze_image_bytes_with_gemini(img_bytes)
+
+        text = extracted_content_from_pptx["text"]
+        if text:
+            my_logger.info(f"\nPPTX Text Content:\n{text}")
+
+        tables = extracted_content_from_pptx["tables"]
+        if tables:
+            df_tables = pd.DataFrame(tables[0][1:], columns=tables[0][0])
+            my_logger.info(f"\nFirst table as DataFrame:\n{df_tables.head()}")
+
+        # for img_bytes in extracted_content_from_pptx["images"]:
+        # image_analysis_by_ai = analyze_image_bytes_with_gemini(img_bytes)
+        # my_logger.info(f"Image analysis result:\n{image_analysis_by_ai}")
+        images = extracted_content_from_pptx["images"]
+        for image in images:
+            data, ext = image
+            image = Image.open(io.BytesIO(data))
+            image_analysis_by_ai = analyze_embedded_image_with_gemini(image)
             my_logger.info(f"Image analysis result:\n{image_analysis_by_ai}")
-            break
 
         return extracted_content_from_pptx
 
