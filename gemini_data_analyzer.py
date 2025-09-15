@@ -1,7 +1,7 @@
 from google import genai
 from google.genai import types
 import io
-
+from helpers import my_logger
 import dotenv
 
 dotenv.load_dotenv()
@@ -10,8 +10,10 @@ GEMINI_API_KEY = dotenv.get_key(".env", "GEMINI_API_KEY")
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
-prompt_for_original_image = """You are a security consultant.
-Generate a JSON object based on a security analysis of the content of the uploaded file.
+
+prompt = """You are a security consultant. Analyse and provide insights in a few lines. Don't add any additional text."""
+
+prompt_for_output = """Generate a JSON object based on a security analysis.
 The JSON object must have the following structure:
 1.  A top-level key named "file_description". Its value must be a JSON object containing:
     - A key "heading" with a string value.
@@ -28,15 +30,14 @@ Here is the exact format to follow:
   ]
 }"""
 
-prompt_for_image_analysis = """You are a security consultant. Analyse the image and provide insights. Don't add any additional text."""
-
 
 def analyze_image_with_gemini(input_file, file_type):
     image_bytes = input_file.getvalue()
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=[
-            prompt_for_original_image,
+            prompt,
+            prompt_for_output,
             types.Part.from_bytes(
                 data=image_bytes,
                 mime_type=file_type,
@@ -46,7 +47,7 @@ def analyze_image_with_gemini(input_file, file_type):
             thinking_config=types.ThinkingConfig(thinking_budget=0)
         ),
     )
-
+    my_logger.info(f"Image analysis result:\n{response}")
     return response.text
 
 
@@ -58,17 +59,28 @@ def analyze_embedded_image_with_gemini(image):
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=[
-            prompt_for_image_analysis,
-            genai.types.Part.from_bytes(
-                data=data,
-                mime_type="image/png"
-            ),
+            prompt,
+            genai.types.Part.from_bytes(data=data, mime_type="image/png"),
         ],
         config=genai.types.GenerateContentConfig(
             thinking_config=genai.types.ThinkingConfig(thinking_budget=0)
         ),
     )
-    return response
+    my_logger.info(f"Embedded image analysis result:\n{response}")
+    return response.text
+
+
+def analyze_ppt_with_gemini(text, tables, images):
+    content = f"The following text:{text}, tables:{tables},and images:{images} were found in the pptx file."
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=[prompt, content, prompt_for_output],
+        config=types.GenerateContentConfig(
+            thinking_config=types.ThinkingConfig(thinking_budget=0)
+        ),
+    )
+    my_logger.info(f"PPTX analysis result:\n{response}")
+    return response.text
 
 
 # # using bytes

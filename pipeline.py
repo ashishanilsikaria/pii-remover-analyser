@@ -3,6 +3,7 @@ import pandas as pd
 from gemini_data_analyzer import (
     analyze_image_with_gemini,
     analyze_embedded_image_with_gemini,
+    analyze_ppt_with_gemini,
 )
 from helpers import (
     my_logger,
@@ -56,11 +57,14 @@ def get_set_go(input_file) -> dict:
         # image_analysis_by_ai = analyze_image_bytes_with_gemini(img_bytes)
         # my_logger.info(f"Image analysis result:\n{image_analysis_by_ai}")
         images = extracted_content_from_pptx["images"]
+        image_analysis_by_ai = []
         for image in images:
             data, ext = image
             image = Image.open(io.BytesIO(data))
-            image_analysis_by_ai = analyze_embedded_image_with_gemini(image)
-            my_logger.info(f"Image analysis result:\n{image_analysis_by_ai}")
+            image_analysis_result = analyze_embedded_image_with_gemini(image)
+            image_analysis_by_ai.append(image_analysis_result)
+
+        ppt_analysis_by_ai = analyze_ppt_with_gemini(text, tables, image_analysis_by_ai)
 
         return extracted_content_from_pptx
 
