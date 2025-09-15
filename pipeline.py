@@ -1,6 +1,6 @@
 # from utilities.gemini_data_analyzer import analyze_image_with_gemini
 from gemini_data_analyzer import analyze_uploaded_image_with_gemini
-import json
+
 
 
 def get_set_go(input_file):
@@ -12,9 +12,6 @@ def get_set_go(input_file):
     if file_type in ["image/png", "image/jpg", "image/jpeg"]:
 
         analyzed_text_json = analyze_uploaded_image_with_gemini(input_file, file_type)
-        # if analyzed_text_json:
-        # analyzed_text_dict = json.loads(analyzed_text_json)
-        # return analyzed_text_dict
         return analyzed_text_json
 
     elif file_type in [
