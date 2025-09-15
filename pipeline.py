@@ -64,9 +64,11 @@ def get_set_go(input_file) -> dict:
             image_analysis_result = analyze_embedded_image_with_gemini(image)
             image_analysis_by_ai.append(image_analysis_result)
 
-        ppt_analysis_by_ai = analyze_ppt_with_gemini(text, tables, image_analysis_by_ai)
+        analyzed_text_json = analyze_ppt_with_gemini(text, tables, image_analysis_by_ai)
 
-        return extracted_content_from_pptx
+        stripped_data = strip_json_formatting(analyzed_text_json)
+        json_data = json.loads(stripped_data)
+        return json_data
 
     elif file_type == "application/pdf":
 
