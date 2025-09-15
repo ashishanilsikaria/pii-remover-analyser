@@ -19,64 +19,70 @@ import io
 
 def get_set_go(input_file) -> dict:
 
-    file_type = input_file.type
+    try:
 
-    my_logger.info(
-        f"\n Processing file: {input_file.name}, Type: {file_type}, Size: {input_file.size} bytes"
-    )
+        file_type = input_file.type
 
-    if file_type in ["image/png", "image/jpg", "image/jpeg"]:
+        my_logger.info(
+            f"\n Processing file: {input_file.name}, Type: {file_type}, Size: {input_file.size} bytes"
+        )
 
-        analyzed_text_json = analyze_image_with_gemini(input_file, file_type)
-        stripped_data = strip_json_formatting(analyzed_text_json)
-        json_data = json.loads(stripped_data)
-        return json_data
+        if file_type in ["image/png", "image/jpg", "image/jpeg"]:
 
-    elif file_type in [
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    ]:
-        df = pd.read_excel(input_file)
-        my_logger.info(f"Excel DataFrame:\n{df.head()}")
+            analyzed_text_json = analyze_image_with_gemini(input_file, file_type)
+            stripped_data = strip_json_formatting(analyzed_text_json)
+            json_data = json.loads(stripped_data)
+            return json_data
 
-    elif file_type in [
-        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-    ]:
+        elif (
+            file_type
+            == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ):
+            df = pd.read_excel(input_file)
+            my_logger.info(f"Excel DataFrame:\n{df.head()}")
 
-        extracted_content_from_pptx = extract_pptx(input_file)
+        elif (
+            file_type
+            == "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        ):
 
-        text = extracted_content_from_pptx["text"]
-        if text:
-            my_logger.info(f"\nPPTX Text Content:\n{text}")
+            extracted_content_from_pptx = extract_pptx(input_file)
 
-        tables = extracted_content_from_pptx["tables"]
-        if tables:
-            df_tables = pd.DataFrame(tables[0][1:], columns=tables[0][0])
-            my_logger.info(f"\nFirst table as DataFrame:\n{df_tables.head()}")
+            text = extracted_content_from_pptx["text"]
+            if text:
+                my_logger.info(f"\nPPTX Text Content:\n{text}")
 
-        # for img_bytes in extracted_content_from_pptx["images"]:
-        # image_analysis_by_ai = analyze_image_bytes_with_gemini(img_bytes)
-        # my_logger.info(f"Image analysis result:\n{image_analysis_by_ai}")
-        images = extracted_content_from_pptx["images"]
-        image_analysis_by_ai = []
-        for image in images:
-            data, ext = image
-            image = Image.open(io.BytesIO(data))
-            image_analysis_result = analyze_embedded_image_with_gemini(image)
-            image_analysis_by_ai.append(image_analysis_result)
+            tables = extracted_content_from_pptx["tables"]
+            if tables:
+                df_tables = pd.DataFrame(tables[0][1:], columns=tables[0][0])
+                my_logger.info(f"\nFirst table as DataFrame:\n{df_tables.head()}")
 
-        analyzed_text_json = analyze_ppt_with_gemini(text, tables, image_analysis_by_ai)
+            # for img_bytes in extracted_content_from_pptx["images"]:
+            # image_analysis_by_ai = analyze_image_bytes_with_gemini(img_bytes)
+            # my_logger.info(f"Image analysis result:\n{image_analysis_by_ai}")
+            images = extracted_content_from_pptx["images"]
+            image_analysis_by_ai = []
+            for image in images:
+                data, ext = image
+                image = Image.open(io.BytesIO(data))
+                image_analysis_result = analyze_embedded_image_with_gemini(image)
+                image_analysis_by_ai.append(image_analysis_result)
 
-        stripped_data = strip_json_formatting(analyzed_text_json)
-        json_data = json.loads(stripped_data)
-        return json_data
+            analyzed_text_json = analyze_ppt_with_gemini(
+                text, tables, image_analysis_by_ai
+            )
 
-    elif file_type == "application/pdf":
+            stripped_data = strip_json_formatting(analyzed_text_json)
+            json_data = json.loads(stripped_data)
+            return json_data
 
-        pdf_text = extract_text_from_pdf(input_file)
-        my_logger.info(f"PDF Text:\n{pdf_text}")
+        elif file_type == "application/pdf":
 
-    else:
+            pdf_text = extract_text_from_pdf(input_file)
+            my_logger.info(f"PDF Text:\n{pdf_text}")
 
-        final_data = "Unsupported file type."
+        return {"error": "Unsupported file type."}
 
-    return input_file
+    except Exception as e:
+        my_logger.error(f"Error processing file {input_file.name}: {e}")
+        return {"error": str(e)}
