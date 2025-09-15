@@ -15,7 +15,7 @@ The JSON object must have the following structure:
 1.  A top-level key named "file_description". Its value must be a JSON object containing:
     - A key "heading" with a string value.
     - A key "description" with a string value.
-2.  A top-level key named "key_findings". Its value must be an array of strings, where each string is a distinct security finding.
+2.  A top-level key named "key_findings". Its value must be an array of three to four strings, where each string is a distinct security finding.
 
 Here is the exact format to follow:
 {
