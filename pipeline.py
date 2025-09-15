@@ -1,7 +1,7 @@
 # from utilities.gemini_data_analyzer import analyze_image_with_gemini
 import pandas as pd
 from gemini_data_analyzer import analyze_uploaded_image_with_gemini
-from helpers import my_logger
+from helpers import my_logger, extract_pptx
 
 
 def get_set_go(input_file):
@@ -27,6 +27,9 @@ def get_set_go(input_file):
         "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     ]:
         s = 2
+        extracted_content = extract_pptx(input_file)
+        # my_logger.info(f"Extracted text from PPTX:\n{extracted_content}")
+        return extracted_content
 
     elif file_type == "application/pdf":
 

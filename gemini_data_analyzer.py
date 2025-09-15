@@ -10,7 +10,7 @@ GEMINI_API_KEY = dotenv.get_key(".env", "GEMINI_API_KEY")
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
-prompt = """You are a security consultant
+prompt = """You are a security consultant.
 Generate a JSON object based on a security analysis of the content of the uploaded file.
 The JSON object must have the following structure:
 1.  A top-level key named "file_description". Its value must be a JSON object containing:
