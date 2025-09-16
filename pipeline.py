@@ -12,10 +12,26 @@ from helpers import (
     extract_text_from_pdf,
     # convert_images,
 )
+from presidio_analyzer import AnalyzerEngine, 
+from presidio_anonymizer import AnonymizerEngine
 import json
 from PIL import Image
 import io
+import streamlit as st
+from presidio_nlp_engine_config import create_nlp_engine_with_spacy
 
+
+@st.cache_resource
+def nlp_engine():
+    return create_nlp_engine_with_spacy()
+
+@st.cache_resource
+def analyzer_engine():
+    return AnalyzerEngine(nlp_engine=nlp_engine())
+
+@st.cache_resource
+def anonymizer_engine():
+    return AnonymizerEngine()
 
 def get_set_go(input_file) -> dict:
 
