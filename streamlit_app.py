@@ -1,6 +1,6 @@
 import streamlit as st
 from typing import List
-from custom_types import ProcessedFile, filetypes
+from models import ProcessedFile, filetypes
 from pipeline import get_set_go
 import pandas as pd
 

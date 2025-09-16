@@ -3,12 +3,22 @@ from pptx import Presentation
 from PyPDF2 import PdfReader
 from PIL import Image
 from io import BytesIO
+import json
 
 # my_logger.debug('This is a debug message.')
 # my_logger.info('This is an informational message.')
 # my_logger.warning('This is a warning message.')
 # my_logger.error('This is an error message.')
 # my_logger.critical('This is a critical message!')
+
+
+def json_to_dict(json_string):
+    try:
+        data_dict = json.loads(json_string)
+        return data_dict
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON: {e}")
+        return None
 
 
 # Load the presentation

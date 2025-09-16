@@ -1,5 +1,8 @@
+import os
+
+
 def main():
-    print("Hello from pii-remover-analyser!")
+    os.system("streamlit run streamlit_app.py")
 
 
 if __name__ == "__main__":
