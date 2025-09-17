@@ -69,6 +69,9 @@ def get_set_go(input_file) -> dict:
                 df_tables = pd.DataFrame(tables[0][1:], columns=tables[0][0])
                 my_logger.info(f"\nFirst table as DataFrame:\n{df_tables.head()}")
 
+            # to do
+            # Sanitize text
+
             anonymized_df = pd.DataFrame()
             for table in tables:
                 anonymized_table = remove_pii_from_df(table.copy())
@@ -83,7 +86,7 @@ def get_set_go(input_file) -> dict:
                 image = Image.open(io.BytesIO(data))
 
                 # To do
-                # Sanitize image before sending to Gemini
+                # Sanitize image
 
                 image_analysis_result = analyze_embedded_image_with_gemini(image)
                 image_analysis_by_ai.append(image_analysis_result)
@@ -99,9 +102,9 @@ def get_set_go(input_file) -> dict:
             extracted_content_from_pdf = extract_content_from_pdf(input_file)
 
             # To do
-            # Sanitize text before sending to Gemini
-
-            # Send to Gemini for analysis
+            # Sanitize text
+            # sanitize images
+            # send images to Gemini for analysis
 
             my_logger.info(f"PDF Text:\n{extracted_content_from_pdf}")
 

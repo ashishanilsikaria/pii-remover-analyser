@@ -24,6 +24,8 @@ def analyzer_engine():
 def anonymizer_engine():
     return AnonymizerEngine()
 
+# to do
+# create a function to remove pii from text 
 
 def remove_pii_from_image(input_file):
     try:
