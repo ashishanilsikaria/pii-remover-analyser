@@ -60,7 +60,8 @@ def analyze_dataframe_with_gemini(df):
         model="gemini-2.5-flash",
         contents=[prompt, content, prompt_for_output],
         config=types.GenerateContentConfig(
-            thinking_config=types.ThinkingConfig(thinking_budget=0)
+            thinking_config=types.ThinkingConfig(thinking_budget=0),
+            response_mime_type="application/json",
         ),
     )
     my_logger.info(f"DataFrame analysis result:\n{response}")
@@ -80,7 +81,8 @@ def analyze_embedded_image_with_gemini(image):
             genai.types.Part.from_bytes(data=data, mime_type="image/png"),
         ],
         config=genai.types.GenerateContentConfig(
-            thinking_config=genai.types.ThinkingConfig(thinking_budget=0)
+            thinking_config=genai.types.ThinkingConfig(thinking_budget=0),
+            response_mime_type="application/json",
         ),
     )
     my_logger.info(f"Embedded image analysis result:\n{response}")
@@ -94,7 +96,8 @@ def analyze_ppt_with_gemini(text, tables, images):
         model="gemini-2.5-flash",
         contents=[prompt, content, prompt_for_output],
         config=types.GenerateContentConfig(
-            thinking_config=types.ThinkingConfig(thinking_budget=0)
+            thinking_config=types.ThinkingConfig(thinking_budget=0),
+            response_mime_type="application/json",
         ),
     )
     my_logger.info(f"PPTX analysis result:\n{response}")
@@ -107,7 +110,8 @@ def analyze_ppt_with_gemini(text, tables, images):
 #         model="gemini-2.5-flash",
 #         contents=["What is this image?", image_bytes],
 #         config=types.GenerateContentConfig(
-#             thinking_config=types.ThinkingConfig(thinking_budget=0)
+#             thinking_config=types.ThinkingConfig(thinking_budget=0),
+#             response_mime_type="application/json",
 #         ),
 #     )
 
@@ -120,7 +124,8 @@ def analyze_ppt_with_gemini(text, tables, images):
 #         model="gemini-2.5-flash",
 #         contents=[f"{prompt_for_image_analysis} {image_bytes}"],
 #         config=types.GenerateContentConfig(
-#             thinking_config=types.ThinkingConfig(thinking_budget=0)
+#             thinking_config=types.ThinkingConfig(thinking_budget=0),
+#             response_mime_type="application/json",
 #         ),
 #     )
 
