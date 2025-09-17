@@ -33,13 +33,14 @@ def remove_pii_from_image(input_file):
         image = Image.open(input_file)
         pii_removed_image = image_redactor.redact(image=image, fill=(255, 0, 0))  # type: ignore
 
-        col1, col2 = st.columns(2)
-        col1.image(input_file, caption="Original Image", width="content")
-        col2.image(
-            pii_removed_image,  # type: ignore
-            caption="PII Redacted Image",
-            width="content",
-        )
+        # Debug: Display original and redacted images side by side
+        # col1, col2 = st.columns(2)
+        # col1.image(input_file, caption="Original Image", width="content")
+        # col2.image(
+        #     pii_removed_image,  # type: ignore
+        #     caption="PII Redacted Image",
+        #     width="content",
+        # )
 
         return pii_removed_image
 
@@ -50,8 +51,9 @@ def remove_pii_from_image(input_file):
 
 def remove_pii_from_df(df):
 
-    col1, col2 = st.columns(2)
-    col1.dataframe(df)
+    # Debug: Display original DataFrame
+    # col1, col2 = st.columns(2)
+    # col1.dataframe(df)
 
     for column in df.select_dtypes(include=["object"]).columns:
         for index, value in df[column].items():
@@ -69,6 +71,7 @@ def remove_pii_from_df(df):
                     anonymized_value = anonymized_value.text
                     df.at[index, column] = anonymized_value
 
-    col2.dataframe(df)
+    # Debug: Display anonymized DataFrame
+    # col2.dataframe(df)
 
     return df
