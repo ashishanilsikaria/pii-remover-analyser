@@ -12,8 +12,9 @@ from helpers import (
     extract_text_from_pdf,
     # convert_images,
 )
-from presidio_analyzer import AnalyzerEngine, 
+from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
+from presidio_image_redactor import ImageRedactorEngine
 import json
 from PIL import Image
 import io
@@ -25,13 +26,21 @@ from presidio_nlp_engine_config import create_nlp_engine_with_spacy
 def nlp_engine():
     return create_nlp_engine_with_spacy()
 
+
 @st.cache_resource
 def analyzer_engine():
     return AnalyzerEngine(nlp_engine=nlp_engine())
 
+
 @st.cache_resource
 def anonymizer_engine():
     return AnonymizerEngine()
+
+
+@st.cache_resource
+def image_redactor_engine():
+    return ImageRedactorEngine()
+
 
 def get_set_go(input_file) -> dict:
 
@@ -44,10 +53,22 @@ def get_set_go(input_file) -> dict:
         )
 
         if file_type in ["image/png", "image/jpg", "image/jpeg"]:
+            image_redactor = image_redactor_engine()
 
-            analyzed_text_json = analyze_image_with_gemini(input_file, file_type)
+            image = Image.open(input_file)
+            pii_removed_image = image_redactor.redact(image=image)  # type: ignore
+            col1, col2 = st.columns(2)
+            col1.image(input_file, caption="Original Image", width="content")
+            col2.image(
+                pii_removed_image,  # type: ignore
+                caption="PII Redacted Image",
+                width="content",
+            )
+
+            analyzed_text_json = analyze_image_with_gemini(pii_removed_image, file_type)
             stripped_data = strip_json_formatting(analyzed_text_json)
             json_data = json.loads(stripped_data)
+            # json_data = {}
             return json_data
 
         elif (

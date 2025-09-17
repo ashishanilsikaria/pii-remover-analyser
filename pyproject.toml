@@ -16,7 +16,10 @@ dependencies = [
     "presidio-image-redactor>=0.0.57",
     "pypdf2>=3.0.1",
     "python-pptx>=1.0.2",
+    "setuptools>=80.9.0",
+    "spacy>=3.8.7",
     "st-annotated-text>=4.0.2",
     "streamlit>=1.49.1",
     "streamlit-tags>=1.2.8",
+    "wheel>=0.45.1",
 ]

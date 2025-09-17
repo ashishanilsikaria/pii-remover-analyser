@@ -31,17 +31,17 @@ Here is the exact format to follow:
 }"""
 
 
-def analyze_image_with_gemini(input_file, file_type):
-    image_bytes = input_file.getvalue()
+def analyze_image_with_gemini(image, file_type):
+    buf = io.BytesIO()
+    image.save(buf, format="PNG")
+    data = buf.getvalue()
+    # my_file = client.files.upload(file=buf)
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=[
             prompt,
             prompt_for_output,
-            types.Part.from_bytes(
-                data=image_bytes,
-                mime_type=file_type,
-            ),
+            genai.types.Part.from_bytes(data=data, mime_type="image/png"),
         ],
         config=types.GenerateContentConfig(
             thinking_config=types.ThinkingConfig(thinking_budget=0)
