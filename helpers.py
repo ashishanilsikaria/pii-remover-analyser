@@ -1,9 +1,10 @@
 import logging
+import json
 from pptx import Presentation
 from PyPDF2 import PdfReader
 from PIL import Image
 from io import BytesIO
-import json
+
 
 # my_logger.debug('This is a debug message.')
 # my_logger.info('This is an informational message.')
@@ -50,8 +51,6 @@ def extract_pptx(file):
     return content
 
 
-
-
 def extract_text_from_pdf(file):
 
     reader = PdfReader(file)
@@ -65,8 +64,6 @@ def list_to_html_ol(cell):
     if isinstance(cell, list):
         return "<ul>" + "".join(f"<li>{item}</li>" for item in cell) + "</ul>"
     return cell
-
-
 
 
 def setup_logger(name, log_file, level=logging.INFO):

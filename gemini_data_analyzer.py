@@ -1,8 +1,10 @@
+import io
+import dotenv
+
 from google import genai
 from google.genai import types
-import io
+
 from helpers import my_logger
-import dotenv
 
 dotenv.load_dotenv()
 

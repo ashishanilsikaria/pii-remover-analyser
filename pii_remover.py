@@ -1,10 +1,12 @@
-from presidio_image_redactor import ImageRedactorEngine
 import streamlit as st
 from PIL import Image
-from helpers import my_logger
-from presidio_nlp_engine_config import create_nlp_engine_with_spacy
+
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
+from presidio_image_redactor import ImageRedactorEngine
+
+from helpers import my_logger
+from presidio_nlp_engine_config import create_nlp_engine_with_spacy
 
 
 @st.cache_resource

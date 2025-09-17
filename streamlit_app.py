@@ -1,11 +1,10 @@
 import streamlit as st
-from typing import List
-from models import ProcessedFile, filetypes
-from pipeline import get_set_go
 import pandas as pd
+from typing import List
 
+from pipeline import get_set_go
 from helpers import list_to_html_ol, my_logger
-
+from models import ProcessedFile, filetypes
 
 st.set_page_config(page_title="Ashish", layout="wide")
 st.title("PII remover and analyser")

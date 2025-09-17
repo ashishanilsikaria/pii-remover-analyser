@@ -1,5 +1,6 @@
 import logging
 from typing import Tuple
+
 from presidio_analyzer import RecognizerRegistry
 from presidio_analyzer.nlp_engine import (
     NlpEngine,
