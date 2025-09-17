@@ -20,6 +20,7 @@ from PIL import Image
 import io
 import streamlit as st
 from presidio_nlp_engine_config import create_nlp_engine_with_spacy
+from pii_remover import remove_pii_from_image
 
 
 @st.cache_resource
@@ -37,11 +38,6 @@ def anonymizer_engine():
     return AnonymizerEngine()
 
 
-@st.cache_resource
-def image_redactor_engine():
-    return ImageRedactorEngine()
-
-
 def get_set_go(input_file) -> dict:
 
     try:
@@ -53,22 +49,14 @@ def get_set_go(input_file) -> dict:
         )
 
         if file_type in ["image/png", "image/jpg", "image/jpeg"]:
-            image_redactor = image_redactor_engine()
 
-            image = Image.open(input_file)
-            pii_removed_image = image_redactor.redact(image=image)  # type: ignore
-            col1, col2 = st.columns(2)
-            col1.image(input_file, caption="Original Image", width="content")
-            col2.image(
-                pii_removed_image,  # type: ignore
-                caption="PII Redacted Image",
-                width="content",
-            )
+            pii_removed_image = remove_pii_from_image(input_file)
 
-            analyzed_text_json = analyze_image_with_gemini(pii_removed_image, file_type)
-            stripped_data = strip_json_formatting(analyzed_text_json)
-            json_data = json.loads(stripped_data)
-            # json_data = {}
+            # analyzed_text_json = analyze_image_with_gemini(pii_removed_image, file_type)
+            # stripped_data = strip_json_formatting(analyzed_text_json)
+            # json_data = json.loads(stripped_data)
+            
+            json_data = {}
             return json_data
 
         elif (
