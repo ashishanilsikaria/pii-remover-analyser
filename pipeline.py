@@ -1,4 +1,3 @@
-# from utilities.gemini_data_analyzer import analyze_image_with_gemini
 import pandas as pd
 from gemini_data_analyzer import (
     analyze_image_with_gemini,
@@ -20,22 +19,7 @@ from PIL import Image
 import io
 import streamlit as st
 from presidio_nlp_engine_config import create_nlp_engine_with_spacy
-from pii_remover import remove_pii_from_image
-
-
-@st.cache_resource
-def nlp_engine():
-    return create_nlp_engine_with_spacy()
-
-
-@st.cache_resource
-def analyzer_engine():
-    return AnalyzerEngine(nlp_engine=nlp_engine())
-
-
-@st.cache_resource
-def anonymizer_engine():
-    return AnonymizerEngine()
+from pii_remover import remove_pii_from_image, remove_pii_from_df
 
 
 def get_set_go(input_file) -> dict:
@@ -52,10 +36,10 @@ def get_set_go(input_file) -> dict:
 
             pii_removed_image = remove_pii_from_image(input_file)
 
-            # analyzed_text_json = analyze_image_with_gemini(pii_removed_image, file_type)
-            # stripped_data = strip_json_formatting(analyzed_text_json)
-            # json_data = json.loads(stripped_data)
-            
+            analyzed_text_json = analyze_image_with_gemini(pii_removed_image, file_type)
+            stripped_data = strip_json_formatting(analyzed_text_json)
+            json_data = json.loads(stripped_data)
+
             json_data = {}
             return json_data
 
@@ -64,6 +48,9 @@ def get_set_go(input_file) -> dict:
             == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ):
             df = pd.read_excel(input_file)
+
+            anonymized_df = remove_pii_from_df(df.copy())
+            
             my_logger.info(f"Excel DataFrame:\n{df.head()}")
 
         elif (
@@ -85,6 +72,7 @@ def get_set_go(input_file) -> dict:
             # for img_bytes in extracted_content_from_pptx["images"]:
             # image_analysis_by_ai = analyze_image_bytes_with_gemini(img_bytes)
             # my_logger.info(f"Image analysis result:\n{image_analysis_by_ai}")
+
             images = extracted_content_from_pptx["images"]
             image_analysis_by_ai = []
             for image in images:
