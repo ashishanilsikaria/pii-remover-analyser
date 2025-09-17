@@ -8,19 +8,14 @@ from gemini_data_analyzer import (
 from helpers import (
     my_logger,
     extract_pptx,
-    # strip_json_formatting,
     extract_text_from_pdf,
-    # convert_images,
 )
 
-# from presidio_analyzer import AnalyzerEngine
-# from presidio_anonymizer import AnonymizerEngine
-# from presidio_image_redactor import ImageRedactorEngine
 import json
 from PIL import Image
 import io
 
-# import streamlit as st
+
 from presidio_nlp_engine_config import create_nlp_engine_with_spacy
 from pii_remover import remove_pii_from_image, remove_pii_from_df
 
@@ -41,7 +36,7 @@ def get_set_go(input_file) -> dict:
 
             analyzed_text_json = analyze_image_with_gemini(pii_removed_image, file_type)
             json_data = json.loads(analyzed_text_json)  # type: ignore
-            # json_data = {}
+
 
             return json_data
 
@@ -55,7 +50,7 @@ def get_set_go(input_file) -> dict:
             csv_buffer = io.StringIO()
             anonymized_df.to_csv(
                 csv_buffer, index=False
-            )  # index=False to avoid writing the DataFrame index
+            )  
             csv_buffer.seek(0)
 
             analyzed_text_json = analyze_dataframe_with_gemini(anonymized_df)
@@ -88,9 +83,6 @@ def get_set_go(input_file) -> dict:
                     [anonymized_df, anonymized_table], ignore_index=True
                 )
 
-            # for img_bytes in extracted_content_from_pptx["images"]:
-            # image_analysis_by_ai = analyze_image_bytes_with_gemini(img_bytes)
-            # my_logger.info(f"Image analysis result:\n{image_analysis_by_ai}")
 
             images = extracted_content_from_pptx["images"]
             image_analysis_by_ai = []
@@ -104,7 +96,7 @@ def get_set_go(input_file) -> dict:
                 text, anonymized_df, image_analysis_by_ai
             )
 
-            # stripped_data = strip_json_formatting(analyzed_text_json)
+            
             return json.loads(analyzed_text_json)  # type: ignore
 
         elif file_type == "application/pdf":

@@ -50,12 +50,6 @@ def extract_pptx(file):
     return content
 
 
-# def convert_images(image_list):
-#     results = []
-#     for blob in image_list:
-#         img = Image.open(BytesIO(blob))  # working image object
-#         results.append({"image": img})
-#     return results
 
 
 def extract_text_from_pdf(file):
@@ -73,8 +67,6 @@ def list_to_html_ol(cell):
     return cell
 
 
-# def strip_json_formatting(text) -> str:
-#     return text.replace("```json", "").replace("```", "").strip()
 
 
 def setup_logger(name, log_file, level=logging.INFO):
