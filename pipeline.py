@@ -5,8 +5,8 @@ from PIL import Image
 
 from helpers import (
     my_logger,
-    extract_pptx,
-    extract_text_from_pdf,
+    extract_content_from_pptx,
+    extract_content_from_pdf,
 )
 from pii_remover import remove_pii_from_image, remove_pii_from_df
 from gemini_data_analyzer import (
@@ -32,15 +32,15 @@ def get_set_go(input_file) -> dict:
             pii_removed_image = remove_pii_from_image(input_file)
 
             analyzed_text_json = analyze_image_with_gemini(pii_removed_image, file_type)
-            json_data = json.loads(analyzed_text_json)  # type: ignore
 
-            return json_data
+            return json.loads(analyzed_text_json)  # type: ignore
 
         elif (
             file_type
             == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ):
             df = pd.read_excel(input_file)
+
             anonymized_df = remove_pii_from_df(df.copy())
 
             csv_buffer = io.StringIO()
@@ -58,7 +58,7 @@ def get_set_go(input_file) -> dict:
             == "application/vnd.openxmlformats-officedocument.presentationml.presentation"
         ):
 
-            extracted_content_from_pptx = extract_pptx(input_file)
+            extracted_content_from_pptx = extract_content_from_pptx(input_file)
 
             text = extracted_content_from_pptx["text"]
             if text:
@@ -70,7 +70,6 @@ def get_set_go(input_file) -> dict:
                 my_logger.info(f"\nFirst table as DataFrame:\n{df_tables.head()}")
 
             anonymized_df = pd.DataFrame()
-
             for table in tables:
                 anonymized_table = remove_pii_from_df(table.copy())
                 anonymized_df = pd.concat(
@@ -82,6 +81,10 @@ def get_set_go(input_file) -> dict:
             for image in images:
                 data, ext = image
                 image = Image.open(io.BytesIO(data))
+
+                # To do
+                # Sanitize image before sending to Gemini
+
                 image_analysis_result = analyze_embedded_image_with_gemini(image)
                 image_analysis_by_ai.append(image_analysis_result)
 
@@ -93,9 +96,14 @@ def get_set_go(input_file) -> dict:
 
         elif file_type == "application/pdf":
 
-            pdf_text = extract_text_from_pdf(input_file)
+            extracted_content_from_pdf = extract_content_from_pdf(input_file)
 
-            my_logger.info(f"PDF Text:\n{pdf_text}")
+            # To do
+            # Sanitize text before sending to Gemini
+
+            # Send to Gemini for analysis
+
+            my_logger.info(f"PDF Text:\n{extracted_content_from_pdf}")
 
         return {"error": "Unsupported file type."}
 

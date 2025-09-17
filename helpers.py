@@ -23,7 +23,7 @@ def json_to_dict(json_string):
 
 
 # Load the presentation
-def extract_pptx(file):
+def extract_content_from_pptx(file):
     prs = Presentation(file)
     content = {"text": [], "tables": [], "images": []}
 
@@ -51,7 +51,7 @@ def extract_pptx(file):
     return content
 
 
-def extract_text_from_pdf(file):
+def extract_content_from_pdf(file):
 
     reader = PdfReader(file)
     text = ""
