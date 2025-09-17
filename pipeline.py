@@ -10,8 +10,8 @@ from helpers import (
 )
 from pii_remover import remove_pii_from_image, remove_pii_from_df
 from gemini_data_analyzer import (
-    analyze_dataframe_with_gemini,
     analyze_image_with_gemini,
+    analyze_dataframe_with_gemini,
     analyze_embedded_image_with_gemini,
     analyze_ppt_with_gemini,
 )

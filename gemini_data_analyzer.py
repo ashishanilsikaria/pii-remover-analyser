@@ -57,7 +57,7 @@ def analyze_image_with_gemini(image, file_type):
 
 # Analyze dataframe content
 def analyze_dataframe_with_gemini(df):
-    content = f"The following datawas found in the excel file:{df} "
+    content = f"The following data was found in the excel file:{df.head().to_string()} "
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=[prompt, content, prompt_for_output],
