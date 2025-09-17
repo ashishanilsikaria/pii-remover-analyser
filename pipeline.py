@@ -38,10 +38,9 @@ def get_set_go(input_file) -> dict:
             pii_removed_image = remove_pii_from_image(input_file)
 
             analyzed_text_json = analyze_image_with_gemini(pii_removed_image, file_type)
-            # stripped_data = strip_json_formatting(analyzed_text_json)
             json_data = json.loads(analyzed_text_json) # type: ignore
-
             # json_data = {}
+            
             return json_data
 
         elif (

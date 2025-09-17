@@ -44,6 +44,7 @@ if uploaded_files:
 
             except Exception as e:
                 st.error(f"Error processing {file.name}: {e}")
+                my_logger.error(f"Error processing {file.name}: {e}")
 
 if results:
     table_rows = []

@@ -5,7 +5,6 @@ from helpers import my_logger
 from presidio_nlp_engine_config import create_nlp_engine_with_spacy
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
-import pandas as pd
 
 
 @st.cache_resource
@@ -14,13 +13,9 @@ def image_redactor_engine():
 
 
 @st.cache_resource
-def nlp_engine():
-    return create_nlp_engine_with_spacy()
-
-
-@st.cache_resource
 def analyzer_engine():
-    return AnalyzerEngine(nlp_engine=nlp_engine())
+    nlp_engine, registry = create_nlp_engine_with_spacy()
+    return AnalyzerEngine(nlp_engine=nlp_engine, registry=registry)
 
 
 @st.cache_resource
@@ -61,38 +56,17 @@ def remove_pii_from_df(df):
             if isinstance(value, str):
                 results = analyzer_engine().analyze(
                     text=value,
-                    # entities=["PERSON", "EMAIL_ADDRESS", "PHONE_NUMBER"],
                     language="en",
+                    score_threshold=0,
                 )
                 if results:
                     anonymized_value = anonymizer_engine().anonymize(
-                        text=value, analyzer_results=results
+                        text=value,
+                        analyzer_results=results,  # type: ignore
                     )
-                    # anonymized_value = anonymized_value['text']
+                    anonymized_value = anonymized_value.text
                     df.at[index, column] = anonymized_value
 
     col2.dataframe(df)
 
     return df
-
-
-# df = pd.DataFrame.from_records([r.to_dict() for r in st_analyze_results])
-# df["text"] = [st_text[res.start : res.end] for res in st_analyze_results]
-
-# df_subset = df[["entity_type", "text", "start", "end", "score"]].rename(
-#     {
-#         "entity_type": "Entity type",
-#         "text": "Text",
-#         "start": "Start",
-#         "end": "End",
-#         "score": "Confidence",
-#     },
-#     axis=1,
-# )
-# df_subset["Text"] = [st_text[res.start : res.end] for res in st_analyze_results]
-# if st_return_decision_process:
-#     analysis_explanation_df = pd.DataFrame.from_records(
-#         [r.analysis_explanation.to_dict() for r in st_analyze_results]
-#     )
-#     df_subset = pd.concat([df_subset, analysis_explanation_df], axis=1)
-# st.dataframe(df_subset.reset_index(drop=True), use_container_width=True)

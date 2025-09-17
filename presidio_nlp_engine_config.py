@@ -1,5 +1,5 @@
 import logging
-
+from typing import Tuple
 from presidio_analyzer import RecognizerRegistry
 from presidio_analyzer.nlp_engine import (
     NlpEngine,
@@ -9,8 +9,8 @@ from presidio_analyzer.nlp_engine import (
 logger = logging.getLogger("presidio-streamlit")
 
 
-# def create_nlp_engine_with_spacy() -> Tuple[NlpEngine, RecognizerRegistry]:
-def create_nlp_engine_with_spacy() -> NlpEngine:
+def create_nlp_engine_with_spacy() -> Tuple[NlpEngine, RecognizerRegistry]:
+    # def create_nlp_engine_with_spacy() -> NlpEngine:
     """
     Instantiate an NlpEngine with a spaCy model
     :param model_path: path to model / model name.
@@ -52,7 +52,8 @@ def create_nlp_engine_with_spacy() -> NlpEngine:
     nlp_engine = NlpEngineProvider(nlp_configuration=nlp_configuration).create_engine()
 
     registry = RecognizerRegistry()
+    registry.add_recognizers_from_yaml("patterns/emp.yaml")
+    registry.add_recognizers_from_yaml("patterns/token.yaml")
     registry.load_predefined_recognizers(nlp_engine=nlp_engine)
 
-    return nlp_engine
-    # return nlp_engine, registry
+    return nlp_engine, registry
