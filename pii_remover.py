@@ -47,16 +47,14 @@ def remove_pii_from_image(input_file):
         return pii_removed_image
 
     except Exception as e:
-        my_logger.error(f"Error processing file {input_file.name}: {e}")
+        my_logger.error(f"Error removing pii from file {input_file.name}: {e}")
         return {"error": str(e)}
 
 
 def remove_pii_from_df(df):
 
-
     col1, col2 = st.columns(2)
     col1.dataframe(df)
-
 
     for column in df.select_dtypes(include=["object"]).columns:
         for index, value in df[column].items():
@@ -72,7 +70,7 @@ def remove_pii_from_df(df):
                     )
                     # anonymized_value = anonymized_value['text']
                     df.at[index, column] = anonymized_value
-    
+
     col2.dataframe(df)
 
     return df

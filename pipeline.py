@@ -1,5 +1,6 @@
 import pandas as pd
 from gemini_data_analyzer import (
+    analyze_dataframe_with_gemini,
     analyze_image_with_gemini,
     analyze_embedded_image_with_gemini,
     analyze_ppt_with_gemini,
@@ -37,10 +38,10 @@ def get_set_go(input_file) -> dict:
             pii_removed_image = remove_pii_from_image(input_file)
 
             analyzed_text_json = analyze_image_with_gemini(pii_removed_image, file_type)
-            stripped_data = strip_json_formatting(analyzed_text_json)
-            json_data = json.loads(stripped_data)
+            # stripped_data = strip_json_formatting(analyzed_text_json)
+            json_data = json.loads(analyzed_text_json) # type: ignore
 
-            json_data = {}
+            # json_data = {}
             return json_data
 
         elif (
@@ -48,9 +49,16 @@ def get_set_go(input_file) -> dict:
             == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ):
             df = pd.read_excel(input_file)
-
             anonymized_df = remove_pii_from_df(df.copy())
-            
+
+            csv_buffer = io.StringIO()
+            anonymized_df.to_csv(
+                csv_buffer, index=False
+            )  # index=False to avoid writing the DataFrame index
+            csv_buffer.seek(0)
+
+            # analyzed_text_json = analyze_dataframe_with_gemini(anonymized_df)
+
             my_logger.info(f"Excel DataFrame:\n{df.head()}")
 
         elif (

@@ -31,6 +31,7 @@ Here is the exact format to follow:
 }"""
 
 
+# Analyze direct image input
 def analyze_image_with_gemini(image, file_type):
     buf = io.BytesIO()
     image.save(buf, format="PNG")
@@ -44,13 +45,29 @@ def analyze_image_with_gemini(image, file_type):
             genai.types.Part.from_bytes(data=data, mime_type="image/png"),
         ],
         config=types.GenerateContentConfig(
-            thinking_config=types.ThinkingConfig(thinking_budget=0)
+            thinking_config=types.ThinkingConfig(thinking_budget=0),
+            response_mime_type="application/json",
         ),
     )
-    my_logger.info(f"Image analysis result:\n{response}")
+    my_logger.info(f"Image analysis result:\n{response.text}")
     return response.text
 
 
+# Analyze dataframe content
+def analyze_dataframe_with_gemini(df):
+    content = f"The following datawas found in the excel file:{df} "
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=[prompt, content, prompt_for_output],
+        config=types.GenerateContentConfig(
+            thinking_config=types.ThinkingConfig(thinking_budget=0)
+        ),
+    )
+    my_logger.info(f"DataFrame analysis result:\n{response}")
+    return response.text
+
+
+# Analyze embedded image in pptx
 def analyze_embedded_image_with_gemini(image):
     buf = io.BytesIO()
     image.save(buf, format="PNG")
@@ -70,6 +87,7 @@ def analyze_embedded_image_with_gemini(image):
     return response.text
 
 
+# Analyze pptx content
 def analyze_ppt_with_gemini(text, tables, images):
     content = f"The following text:{text}, tables:{tables},and images:{images} were found in the pptx file."
     response = client.models.generate_content(
