@@ -73,8 +73,8 @@ def list_to_html_ol(cell):
     return cell
 
 
-def strip_json_formatting(text) -> str:
-    return text.replace("```json", "").replace("```", "").strip()
+# def strip_json_formatting(text) -> str:
+#     return text.replace("```json", "").replace("```", "").strip()
 
 
 def setup_logger(name, log_file, level=logging.INFO):
