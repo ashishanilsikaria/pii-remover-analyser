@@ -1,0 +1,153 @@
+import math
+from pptx import Presentation
+from pptx.util import Inches, Pt
+from pptx.enum.text import PP_ALIGN, MSO_VERTICAL_ANCHOR
+
+
+def estimate_row_content_lines(
+    record, chars_per_line_desc=55, chars_per_line_findings=60
+):
+    """
+    Estimates the number of lines a record will take up in the table.
+    This is a heuristic to dynamically decide how many rows fit on a slide.
+    """
+    # Estimate lines for description (heading + body)
+    heading_lines = math.ceil(len(record[2]) / chars_per_line_desc)
+    desc_lines = math.ceil(len(record[3]) / chars_per_line_desc)
+
+    # Estimate lines for findings
+    findings_lines = 0
+    for finding in record[4]:
+        findings_lines += math.ceil(len(finding) / chars_per_line_findings)
+
+    # The total cost is the max of the two columns, plus a buffer
+    return max(heading_lines + desc_lines, findings_lines) + 2
+
+
+def create_presentation(data, output_filename):
+
+    prs = Presentation()
+    prs.slide_width = Inches(10)
+    prs.slide_height = Inches(7.5)
+
+    # --- Static Slides (1-4) ---
+    slide_layout_title = prs.slide_layouts[0]
+    slide = prs.slides.add_slide(slide_layout_title)
+    title = slide.shapes.title
+    subtitle = slide.placeholders[1]
+    title.text = "Automating File Cleansing and Analysis Leveraging AI"
+    subtitle.text = (
+        "Case Study Solution Presentation" "\nGroup Number: __" "\nTeam Members: __"
+    )
+
+    slide_layout_content = prs.slide_layouts[1]
+    static_slides_info = [
+        {
+            "title": "Case study Overview",
+            "content": "Populate this slide with your interpretation of the case study.",
+        },
+        {
+            "title": "Approach Taken",
+            "content": "Populate this slide with the strategy you used to address the case challenges.",
+        },
+        {
+            "title": "Functional Design Diagram",
+            "content": "Populate this slide with the functional design diagram of your application...",
+        },
+    ]
+    for info in static_slides_info:
+        slide = prs.slides.add_slide(slide_layout_content)
+        slide.shapes.title.text = info["title"]
+        slide.placeholders[1].text = info["content"]
+
+    # --- Dynamic Data Slides ---
+    ppt_headers = ["File Name", "File Type", "File Description", "Key Findings"]
+    data_rows = data[1:]
+
+    # Max estimated lines of content that can fit on one slide's table
+    MAX_CONTENT_LINES_PER_SLIDE = 18
+
+    rows_to_process = data_rows[:]
+
+    while rows_to_process:
+        slide = prs.slides.add_slide(slide_layout_content)
+        slide.shapes.title.text = "File Analysis Sample Output"
+
+        current_slide_rows = []
+        current_slide_lines = 0
+
+        while rows_to_process:
+            next_row = rows_to_process[0]
+            estimated_lines = estimate_row_content_lines(next_row)
+
+            if (
+                not current_slide_rows
+                or (current_slide_lines + estimated_lines)
+                <= MAX_CONTENT_LINES_PER_SLIDE
+            ):
+                current_slide_lines += estimated_lines
+                current_slide_rows.append(rows_to_process.pop(0))
+            else:
+                break
+
+        num_rows_in_table = len(current_slide_rows) + 1
+        table = slide.shapes.add_table(
+            num_rows_in_table, 4, Inches(0.25), Inches(1.5), Inches(9.5), Inches(5.7)
+        ).table
+
+        table.columns[0].width = Inches(1.4)
+        table.columns[1].width = Inches(0.8)
+        table.columns[2].width = Inches(3.6)
+        table.columns[3].width = Inches(3.7)
+
+        # Populate header and set its height
+        for col_idx, header_text in enumerate(ppt_headers):
+            cell = table.cell(0, col_idx)
+            cell.text = header_text
+            p = cell.text_frame.paragraphs[0]
+            p.font.bold = True
+            p.font.size = Pt(12)
+            p.alignment = PP_ALIGN.CENTER
+            cell.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
+
+        # *** CHANGE 1: REDUCE HEADER ROW HEIGHT ***
+        table.rows[0].height = Inches(0.4)
+
+        # Populate data rows
+        for row_idx, record in enumerate(current_slide_rows, start=1):
+            
+
+            # Column 3: Description
+            cell = table.cell(row_idx, 2)
+            # cell.vertical_anchor = MSO_VERTICAL_ANCHOR.TOP
+            tf = cell.text_frame
+            # tf.clear()
+
+            p_h = tf.add_paragraph()
+            p_h.text = record[2]
+            p_h.font.bold = True
+            p_h.font.size = Pt(10)
+
+            p_d = tf.add_paragraph()
+            p_d.text = record[3]
+            p_d.font.size = Pt(9)
+
+            # Column 4: Findings
+            cell = table.cell(row_idx, 3)
+            # cell.vertical_anchor = MSO_VERTICAL_ANCHOR.TOP
+            tf = cell.text_frame
+            # tf.clear()
+
+            for finding in record[4]:
+                p_f = tf.add_paragraph()
+                p_f.text = f"• {finding}"
+                p_f.font.size = Pt(9)
+        
+            table.cell(row_idx, 0).text = record[0]
+            table.cell(row_idx, 1).text = record[1]
+            for col_idx in [0, 1]:
+                cell = table.cell(row_idx, col_idx)
+                # cell.vertical_anchor = MSO_VERTICAL_ANCHOR.TOP
+                cell.text_frame.paragraphs[0].font.size = Pt(10)
+
+    prs.save(output_filename)
