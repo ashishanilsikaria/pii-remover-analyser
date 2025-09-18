@@ -1,0 +1,13 @@
+FROM 
+
+WORKDIR /app
+
+RUN 
+
+copy . .
+
+RUN 
+
+EXPOSE
+
+ENTRYPOINT 
