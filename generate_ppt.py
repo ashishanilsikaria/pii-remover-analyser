@@ -61,10 +61,15 @@ def create_presentation(data, output_filename):
     rows_to_process = data[:]
 
     empty_slide = prs.slide_layouts[5]
+    first_table_slide = True
 
     while rows_to_process:
         slide = prs.slides.add_slide(empty_slide)
-        slide.shapes.title.text = "File Analysis Sample Output"
+        if first_table_slide:
+            slide.shapes.title.text = "File Analysis Sample Output"
+            first_table_slide = False
+        else:
+            slide.shapes.title.text = ""
 
         current_slide_rows = []
         current_slide_lines = 0
