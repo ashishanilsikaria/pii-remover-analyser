@@ -7,10 +7,6 @@ from pptx.enum.text import PP_ALIGN, MSO_VERTICAL_ANCHOR
 def estimate_row_content_lines(
     record, chars_per_line_desc=55, chars_per_line_findings=60
 ):
-    """
-    Estimates the number of lines a record will take up in the table.
-    This is a heuristic to dynamically decide how many rows fit on a slide.
-    """
 
     heading_lines = math.ceil(len(record[2]) / chars_per_line_desc)
     desc_lines = math.ceil(len(record[3]) / chars_per_line_desc)
@@ -107,36 +103,44 @@ def create_presentation(data, output_filename):
 
         for row_idx, record in enumerate(current_slide_rows, start=1):
 
+            table.cell(row_idx, 0).text = record[0]
+            table.cell(row_idx, 1).text = record[1]
+            for col_idx in [0, 1]:
+                cell = table.cell(row_idx, col_idx)
+                cell.vertical_anchor = MSO_VERTICAL_ANCHOR.TOP
+                cell.text_frame.paragraphs[0].font.size = Pt(11)
+
             cell = table.cell(row_idx, 2)
             cell.vertical_anchor = MSO_VERTICAL_ANCHOR.TOP
             tf = cell.text_frame
             tf.clear()
 
-            p_h = tf.add_paragraph()
+            p_h = tf.paragraphs[0]
             p_h.text = record[2]
             p_h.font.bold = True
-            p_h.font.size = Pt(10)
+            p_h.font.size = Pt(11)
 
             p_d = tf.add_paragraph()
             p_d.text = record[3]
-            p_d.font.size = Pt(9)
+            p_d.font.size = Pt(11)
 
             cell = table.cell(row_idx, 3)
             cell.vertical_anchor = MSO_VERTICAL_ANCHOR.TOP
             tf = cell.text_frame
             tf.clear()
 
-            for finding in record[4]:
-                p_f = tf.add_paragraph()
-                p_f.text = f"• {finding}"
-                p_f.font.size = Pt(9)
+            if record[4]:
+                p_f = tf.paragraphs[0]
+                p_f.text = f"• {record[4][0]}"
+                p_f.font.size = Pt(11)
 
-            table.cell(row_idx, 0).text = record[0]
-            table.cell(row_idx, 1).text = record[1]
-            for col_idx in [0, 1]:
-                cell = table.cell(row_idx, col_idx)
-                cell.vertical_anchor = MSO_VERTICAL_ANCHOR.TOP
-                cell.text_frame.paragraphs[0].font.size = Pt(10)
+                for finding in record[4][1:]:
+                    p_fb = tf.add_paragraph()
+                    p_fb.text = f"• {finding}"
+                    p_fb.font.size = Pt(11)
+            else:
+
+                tf.paragraphs[0].text = ""
 
     prs.save(output_filename)
 
@@ -150,9 +154,9 @@ if __name__ == "__main__":
             "The image depicts an individual using an RFID/NFC-based access control card to gain entry through a card reader, likely to a restricted area such as an IDF/Electrical room. The system is designed for physical security and access management.",
             [
                 "The use of a physical access card with a photo ID enhances security by allowing visual verification of the cardholder.",
-                "Access control systems like this provide granular control over who can enter specific areas and when, improving overall physical security.",
-                "The room designation 'IDF/ELECTRICAL' indicates a critical infrastructure space, underscoring the importance of restricted access.",
-                "Potential vulnerabilities include card cloning, loss or theft of access cards, or tailgating if not properly enforced.",
+                # "Access control systems like this provide granular control over who can enter specific areas and when, improving overall physical security.",
+                # "The room designation 'IDF/ELECTRICAL' indicates a critical infrastructure space, underscoring the importance of restricted access.",
+                # "Potential vulnerabilities include card cloning, loss or theft of access cards, or tailgating if not properly enforced.",
             ],
         ],
         [
@@ -162,9 +166,9 @@ if __name__ == "__main__":
             "The image displays a multi-factor authentication access control system featuring a keypad, a fingerprint scanner, and a camera, likely used for secure entry into a building or restricted area.",
             [
                 "The presence of a fingerprint scanner indicates biometric authentication, which offers a higher level of security compared to traditional key or card systems.",
-                "The keypad suggests an additional layer of security, possibly requiring a PIN in combination with biometrics (multi-factor authentication).",
-                "The integrated camera could be used for facial recognition or recording individuals attempting to gain access, adding an extra layer of surveillance and identity verification.",
-                "The system enhances physical security by controlling and monitoring entry points, deterring unauthorized access and providing an audit trail of entries.",
+                # "The keypad suggests an additional layer of security, possibly requiring a PIN in combination with biometrics (multi-factor authentication).",
+                # "The integrated camera could be used for facial recognition or recording individuals attempting to gain access, adding an extra layer of surveillance and identity verification.",
+                # "The system enhances physical security by controlling and monitoring entry points, deterring unauthorized access and providing an audit trail of entries.",
             ],
         ],
         [
@@ -176,7 +180,7 @@ if __name__ == "__main__":
                 "Privacy concerns exist as visitor names and reasons for visit are visible to subsequent visitors.",
                 "Data accuracy can be compromised due to illegible handwriting or human error during manual entry.",
                 "Lack of advanced security features like access control, audit trails, or real-time alerts.",
-                "Physical log books are susceptible to damage, loss, or unauthorized alteration, and do not offer robust data backup.",
+                # "Physical log books are susceptible to damage, loss, or unauthorized alteration, and do not offer robust data backup.",
             ],
         ],
     ]
