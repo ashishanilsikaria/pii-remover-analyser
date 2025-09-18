@@ -11,16 +11,14 @@ def estimate_row_content_lines(
     Estimates the number of lines a record will take up in the table.
     This is a heuristic to dynamically decide how many rows fit on a slide.
     """
-    # Estimate lines for description (heading + body)
+
     heading_lines = math.ceil(len(record[2]) / chars_per_line_desc)
     desc_lines = math.ceil(len(record[3]) / chars_per_line_desc)
 
-    # Estimate lines for findings
     findings_lines = 0
     for finding in record[4]:
         findings_lines += math.ceil(len(finding) / chars_per_line_findings)
 
-    # The total cost is the max of the two columns, plus a buffer
     return max(heading_lines + desc_lines, findings_lines) + 2
 
 
@@ -30,7 +28,6 @@ def create_presentation(data, output_filename):
     prs.slide_width = Inches(10)
     prs.slide_height = Inches(7.5)
 
-    # --- Static Slides (1-4) ---
     slide_layout_title = prs.slide_layouts[0]
     slide = prs.slides.add_slide(slide_layout_title)
     title = slide.shapes.title
@@ -60,14 +57,11 @@ def create_presentation(data, output_filename):
         slide.shapes.title.text = info["title"]
         slide.placeholders[1].text = info["content"]
 
-    # --- Dynamic Data Slides ---
     ppt_headers = ["File Name", "File Type", "File Description", "Key Findings"]
-    data_rows = data[1:]
 
-    # Max estimated lines of content that can fit on one slide's table
     MAX_CONTENT_LINES_PER_SLIDE = 18
 
-    rows_to_process = data_rows[:]
+    rows_to_process = data[:]
 
     while rows_to_process:
         slide = prs.slides.add_slide(slide_layout_content)
@@ -100,7 +94,6 @@ def create_presentation(data, output_filename):
         table.columns[2].width = Inches(3.6)
         table.columns[3].width = Inches(3.7)
 
-        # Populate header and set its height
         for col_idx, header_text in enumerate(ppt_headers):
             cell = table.cell(0, col_idx)
             cell.text = header_text
@@ -110,18 +103,14 @@ def create_presentation(data, output_filename):
             p.alignment = PP_ALIGN.CENTER
             cell.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
 
-        # *** CHANGE 1: REDUCE HEADER ROW HEIGHT ***
         table.rows[0].height = Inches(0.4)
 
-        # Populate data rows
         for row_idx, record in enumerate(current_slide_rows, start=1):
-            
 
-            # Column 3: Description
             cell = table.cell(row_idx, 2)
-            # cell.vertical_anchor = MSO_VERTICAL_ANCHOR.TOP
+            cell.vertical_anchor = MSO_VERTICAL_ANCHOR.TOP
             tf = cell.text_frame
-            # tf.clear()
+            tf.clear()
 
             p_h = tf.add_paragraph()
             p_h.text = record[2]
@@ -132,22 +121,63 @@ def create_presentation(data, output_filename):
             p_d.text = record[3]
             p_d.font.size = Pt(9)
 
-            # Column 4: Findings
             cell = table.cell(row_idx, 3)
-            # cell.vertical_anchor = MSO_VERTICAL_ANCHOR.TOP
+            cell.vertical_anchor = MSO_VERTICAL_ANCHOR.TOP
             tf = cell.text_frame
-            # tf.clear()
+            tf.clear()
 
             for finding in record[4]:
                 p_f = tf.add_paragraph()
                 p_f.text = f"• {finding}"
                 p_f.font.size = Pt(9)
-        
+
             table.cell(row_idx, 0).text = record[0]
             table.cell(row_idx, 1).text = record[1]
             for col_idx in [0, 1]:
                 cell = table.cell(row_idx, col_idx)
-                # cell.vertical_anchor = MSO_VERTICAL_ANCHOR.TOP
+                cell.vertical_anchor = MSO_VERTICAL_ANCHOR.TOP
                 cell.text_frame.paragraphs[0].font.size = Pt(10)
 
     prs.save(output_filename)
+
+
+if __name__ == "__main__":
+    sample_data = [
+        [
+            "File_001.png",
+            ".png",
+            "Access Control System (Card Reader)",
+            "The image depicts an individual using an RFID/NFC-based access control card to gain entry through a card reader, likely to a restricted area such as an IDF/Electrical room. The system is designed for physical security and access management.",
+            [
+                "The use of a physical access card with a photo ID enhances security by allowing visual verification of the cardholder.",
+                "Access control systems like this provide granular control over who can enter specific areas and when, improving overall physical security.",
+                "The room designation 'IDF/ELECTRICAL' indicates a critical infrastructure space, underscoring the importance of restricted access.",
+                "Potential vulnerabilities include card cloning, loss or theft of access cards, or tailgating if not properly enforced.",
+            ],
+        ],
+        [
+            "File_002.png",
+            ".png",
+            "Biometric Access Control System",
+            "The image displays a multi-factor authentication access control system featuring a keypad, a fingerprint scanner, and a camera, likely used for secure entry into a building or restricted area.",
+            [
+                "The presence of a fingerprint scanner indicates biometric authentication, which offers a higher level of security compared to traditional key or card systems.",
+                "The keypad suggests an additional layer of security, possibly requiring a PIN in combination with biometrics (multi-factor authentication).",
+                "The integrated camera could be used for facial recognition or recording individuals attempting to gain access, adding an extra layer of surveillance and identity verification.",
+                "The system enhances physical security by controlling and monitoring entry points, deterring unauthorized access and providing an audit trail of entries.",
+            ],
+        ],
+        [
+            "File_003.png",
+            ".png",
+            "Visitors Log Book",
+            "The image shows a traditional paper-based visitors log book, used to record visitor details, reasons for visit, and entry/exit times. It highlights manual data entry and the physical storage of visitor information.",
+            [
+                "Privacy concerns exist as visitor names and reasons for visit are visible to subsequent visitors.",
+                "Data accuracy can be compromised due to illegible handwriting or human error during manual entry.",
+                "Lack of advanced security features like access control, audit trails, or real-time alerts.",
+                "Physical log books are susceptible to damage, loss, or unauthorized alteration, and do not offer robust data backup.",
+            ],
+        ],
+    ]
+    create_presentation(sample_data, "case_study_presentation.pptx")
