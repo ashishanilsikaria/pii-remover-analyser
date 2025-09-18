@@ -15,12 +15,14 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 
 prompt = """You are a security consultant. Analyse and provide insights in a few lines. Don't add any additional text."""
 
+prompt_for_image = "The heading should be the key device or software in the image. The description should be a brief summary of the security aspects depicted in the image."
+
 prompt_for_output = """Generate a JSON object based on a security analysis.
 The JSON object must have the following structure:
 1.  A top-level key named "file_description". Its value must be a JSON object containing:
     - A key "heading" with a string value.
     - A key "description" with a string value.
-2.  A top-level key named "key_findings". Its value must be an array of three to four strings, where each string is a distinct security finding.
+2.  A top-level key named "key_findings". Its value must be an array of three to four strings, where each string is a distinct security finding, it can be advantages, disadvantages or general info.
 
 Here is the exact format to follow:
 {
@@ -43,6 +45,7 @@ def analyze_image_with_gemini(image, file_type):
         model="gemini-2.5-flash",
         contents=[
             prompt,
+            prompt_for_image,
             prompt_for_output,
             genai.types.Part.from_bytes(data=data, mime_type="image/png"),
         ],

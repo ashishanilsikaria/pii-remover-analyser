@@ -5,6 +5,7 @@ from typing import List
 from pipeline import get_set_go
 from helpers import list_to_html_ol, my_logger
 from models import ProcessedFile, filetypes
+from generate_ppt import create_presentation
 
 st.set_page_config(page_title="Ashish", layout="wide")
 st.title("PII remover and analyser")
@@ -46,10 +47,12 @@ if uploaded_files:
                 my_logger.error(f"Error processing {file.name}: {e}")
 
 if results:
-    table_rows = []
+    table_rows_for_ui_display = []
+
+    table_rows_for_ppt = []
 
     for r in results:
-        table_rows.append(
+        table_rows_for_ui_display.append(
             {
                 "File Name": r.file_name,
                 "File Type": r.file_type,
@@ -60,10 +63,22 @@ if results:
             }
         )
 
-    df = pd.DataFrame(table_rows)
+        table_rows_for_ppt.append(
+            [
+                r.file_name,
+                r.file_type,
+                r.file_heading,
+                r.file_description,
+                r.key_findings,
+            ]
+        )
+
+    df = pd.DataFrame(table_rows_for_ui_display)
 
     st.subheader("File Analysis Output")
 
     df["Key Findings"] = df["Key Findings"].apply(list_to_html_ol)
 
     st.markdown(df.to_html(escape=False), unsafe_allow_html=True)
+
+    create_presentation(table_rows_for_ppt, output_filename="analysis_output.pptx")
