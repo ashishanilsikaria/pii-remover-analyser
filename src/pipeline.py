@@ -13,6 +13,7 @@ from gemini_data_analyzer import (
     analyze_image_with_gemini,
     analyze_dataframe_with_gemini,
     analyze_embedded_image_with_gemini,
+    analyze_pdf_with_gemini,
     analyze_ppt_with_gemini,
 )
 
@@ -137,16 +138,15 @@ def get_set_go(input_file) -> dict:
                 image_analysis_by_ai = []
                 if images:
                     for image in images:
-                        data, ext = image
-                        image = Image.open(io.BytesIO(data))
-
+                        image = Image.open(io.BytesIO(image))
                         pii_removed_image = remove_pii_from_image(image)
                         image_analysis_result = analyze_embedded_image_with_gemini(
                             pii_removed_image
                         )
                         image_analysis_by_ai.append(image_analysis_result)
 
-                my_logger.info(f"PDF Text:\n{extracted_content_from_pdf}")
+                analyzed_text_json = analyze_pdf_with_gemini(text, image_analysis_by_ai)
+
             except Exception as e:
                 my_logger.error(f"Error processing PDF file {input_file.name}: {e}")
                 return {"error": str(e)}

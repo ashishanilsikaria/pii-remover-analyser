@@ -50,28 +50,24 @@ def extract_content_from_pptx(file):
 
 
 def extract_content_from_pdf(file):
-    reader = PdfReader(file)
-    content = {"text": [], "tables": [], "images": []}
+    try:
+        reader = PdfReader(file)
+        content = {"text": [], "images": []}
 
-    for page in reader.pages:
-        page_text = page.extract_text()
-        if page_text:
-            content["text"].append(page_text)
+        for page in reader.pages:
+            page_text = page.extract_text()
+            if page_text:
+                content["text"].append(page_text)
+            for image_file_object in page.images:
+                content["images"].append(image_file_object.data)
 
-        # # Extract images
-        # if "/XObject" in page.get("/Resources", {}):
-        #     xObject = page["/Resources"]["/XObject"].get_object()
-        #     for obj in xObject:
-        #         if xObject[obj]["/Subtype"] == "/Image":
-        #             data = xObject[obj]._data
-        #             ext = (
-        #                 xObject[obj]["/Filter"][1:]
-        #                 if "/Filter" in xObject[obj]
-        #                 else "png"
-        #             )
-        #             images_list.append((data, ext))
+        # st.image(content["images"][0], caption="Extracted Image", width="content")
+        my_logger.info(f"Extracted {type(content['images'][0])} images from PDF.")
 
-    return content
+        return content
+    except Exception as e:
+        my_logger.error(f"Error extracting content from PDF: {e}")
+        return {"text": [], "images": []}
 
 
 def list_to_html_ol(cell):

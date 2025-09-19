@@ -133,6 +133,25 @@ def analyze_ppt_with_gemini(text, tables, images):
         return {"error": str(e)}
 
 
+# Analyze pdf content
+def analyze_pdf_with_gemini(text, images):
+    try:
+        content = f"The following text:{text}, and images:{images} were found in the pdf file."
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[prompt, content, prompt_for_output],
+            config=types.GenerateContentConfig(
+                thinking_config=types.ThinkingConfig(thinking_budget=0),
+                response_mime_type="application/json",
+            ),
+        )
+        # my_logger.info(f"PDF analysis result:\n{response}")
+        return response.text
+    except Exception as e:
+        my_logger.error(f"Error analyzing pdf content with gemini: {e}")
+        return {"error": str(e)}
+
+
 # # using bytes
 # def analyze_image_with_gemini_direct(image_bytes):
 #     response = client.models.generate_content(
