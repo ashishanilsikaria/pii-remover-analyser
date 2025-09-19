@@ -33,10 +33,11 @@ Here is the exact format to follow:
   "key_findings": [
   ]
 }"""
+if_multiple_occurrences = "If a text appears across multiple images without any symantic meaning consider it to be brand name and ignore it."
 
 
 # Analyze direct image input
-def analyze_image_with_gemini(image, file_type):
+def analyze_image_with_gemini(image):
     try:
         buf = io.BytesIO()
         image.save(buf, format="PNG")
@@ -91,7 +92,8 @@ def analyze_dataframe_with_gemini(df):
 # Analyze embedded image in pptx
 def analyze_embedded_image_with_gemini(image):
     try:
-
+        # my_logger.info(f"Analyzing embedded image with Gemini...")
+        # my_logger.info(f"Image type: {type(image)}")
         buf = io.BytesIO()
         image.save(buf, format="PNG")
         data = buf.getvalue()
@@ -120,7 +122,7 @@ def analyze_ppt_with_gemini(text, tables, images):
         content = f"The following text:{text}, tables:{tables},and images:{images} were found in the pptx file."
         response = client.models.generate_content(
             model="gemini-2.5-flash",
-            contents=[prompt, content, prompt_for_output],
+            contents=[prompt, content, prompt_for_output, if_multiple_occurrences],
             config=types.GenerateContentConfig(
                 thinking_config=types.ThinkingConfig(thinking_budget=0),
                 response_mime_type="application/json",

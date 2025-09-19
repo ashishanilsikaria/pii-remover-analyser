@@ -34,9 +34,7 @@ def get_set_go(input_file) -> dict:
 
                 pii_removed_image = remove_pii_from_image(input_file)
 
-                analyzed_text_json = analyze_image_with_gemini(
-                    pii_removed_image, file_type
-                )
+                analyzed_text_json = analyze_image_with_gemini(pii_removed_image)
 
                 return json.loads(analyzed_text_json)  # type: ignore
             except Exception as e:
