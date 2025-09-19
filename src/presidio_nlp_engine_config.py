@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import Tuple
 
 from presidio_analyzer import RecognizerRegistry
@@ -30,8 +31,8 @@ def create_nlp_engine_with_spacy() -> Tuple[NlpEngine, RecognizerRegistry]:
                 "LOCATION": "LOCATION",
                 "ORG": "ORGANIZATION",
                 "ORGANIZATION": "ORGANIZATION",
-                "DATE": "DATE_TIME",
-                "TIME": "DATE_TIME",
+                "DATE": "DATE",
+                "TIME": "TIME",
                 "PERSON": "person",
                 "EMAIL_ADDRESS": "email",
                 "PHONE_NUMBER": "phone_number",
@@ -45,16 +46,19 @@ def create_nlp_engine_with_spacy() -> Tuple[NlpEngine, RecognizerRegistry]:
                 "US_DRIVER_LICENSE": "driver_license",
                 "LOCATION": "location",
             },
-            "low_confidence_score_multiplier": 0.4,
-            "low_score_entity_names": ["ORG", "ORGANIZATION"],
+            # "low_confidence_score_multiplier": 0.4,
+            # "low_score_entity_names": ["ORG", "ORGANIZATION"],
         },
     }
 
     nlp_engine = NlpEngineProvider(nlp_configuration=nlp_configuration).create_engine()
 
     registry = RecognizerRegistry()
-    registry.add_recognizers_from_yaml("patterns/emp.yaml")
-    registry.add_recognizers_from_yaml("patterns/token.yaml")
+
+    base_dir = os.path.dirname(__file__)
+    registry.add_recognizers_from_yaml(os.path.join(base_dir, "patterns", "emp.yaml"))
+    registry.add_recognizers_from_yaml(os.path.join(base_dir, "patterns", "token.yaml"))
+
     registry.load_predefined_recognizers(nlp_engine=nlp_engine)
 
     return nlp_engine, registry

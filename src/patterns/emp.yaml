@@ -5,6 +5,6 @@ recognizers:
     patterns:
       - name: "EMPID Pattern"
         regex: "^EMP....."
-        score: 0.01
+        score: 0.8
     context:
       - EMPID

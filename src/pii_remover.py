@@ -1,5 +1,6 @@
 import streamlit as st
 from PIL import Image
+import pandas as pd
 
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
@@ -24,8 +25,26 @@ def analyzer_engine():
 def anonymizer_engine():
     return AnonymizerEngine()
 
-# to do
-# create a function to remove pii from text 
+
+def remove_pii_from_text(input_text):
+
+    results = analyzer_engine().analyze(
+        text=input_text,
+        language="en",
+        score_threshold=1.5,
+    )
+
+    anonymized_text = anonymizer_engine().anonymize(
+        text=input_text, analyzer_results=results  # type: ignore
+    )
+
+    # Debug: Display original and anonymized text
+    # col1, col2 = st.columns(2)
+    # col1.write(input_text)
+    # col2.write(anonymized_text.text)
+
+    return anonymized_text.text
+
 
 def remove_pii_from_image(input_file):
     try:
@@ -57,6 +76,7 @@ def remove_pii_from_df(df):
     # col1, col2 = st.columns(2)
     # col1.dataframe(df)
 
+    anonymized_df = pd.DataFrame()
     for column in df.select_dtypes(include=["object"]).columns:
         for index, value in df[column].items():
             if isinstance(value, str):
@@ -70,10 +90,7 @@ def remove_pii_from_df(df):
                         text=value,
                         analyzer_results=results,  # type: ignore
                     )
-                    anonymized_value = anonymized_value.text
-                    df.at[index, column] = anonymized_value
+                    anonymized_df.at[index, column] = anonymized_value.text
 
-    # Debug: Display anonymized DataFrame
-    # col2.dataframe(df)
-
-    return df
+    # col2.dataframe(anonymized_df)
+    return anonymized_df
