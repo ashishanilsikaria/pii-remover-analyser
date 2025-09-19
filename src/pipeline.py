@@ -145,6 +145,8 @@ def get_set_go(input_file) -> dict:
 
                 analyzed_text_json = analyze_pdf_with_gemini(text, image_analysis_by_ai)
 
+                return json.loads(analyzed_text_json)  # type: ignore
+
             except Exception as e:
                 my_logger.error(f"Error processing PDF file {input_file.name}: {e}")
                 return {"error": str(e)}

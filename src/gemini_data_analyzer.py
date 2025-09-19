@@ -147,7 +147,7 @@ def analyze_pdf_with_gemini(text, images):
                 response_mime_type="application/json",
             ),
         )
-        # my_logger.info(f"PDF analysis result:\n{response}")
+        # my_logger.info(f"PDF analysis result:\n{response.text}")
         return response.text
     except Exception as e:
         my_logger.error(f"Error analyzing pdf content with gemini: {e}")
