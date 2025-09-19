@@ -54,7 +54,7 @@ def analyze_image_with_gemini(image, file_type):
             response_mime_type="application/json",
         ),
     )
-    my_logger.info(f"Image analysis result:\n{response.text}")
+    # my_logger.info(f"Image analysis result:\n{response.text}")
     return response.text
 
 
@@ -63,13 +63,18 @@ def analyze_dataframe_with_gemini(df):
     content = f"The following data was found in the excel file:{df.head().to_string()} "
     response = client.models.generate_content(
         model="gemini-2.5-flash",
-        contents=[prompt, content, prompt_for_output],
+        contents=[
+            prompt,
+            content,
+            prompt_for_output,
+            "There could be some inconsistency in the data, or it could contain NaN values. Please ignore those.",
+        ],
         config=types.GenerateContentConfig(
             thinking_config=types.ThinkingConfig(thinking_budget=0),
             response_mime_type="application/json",
         ),
     )
-    my_logger.info(f"DataFrame analysis result:\n{response}")
+    # my_logger.info(f"DataFrame analysis result:\n{response}")
     return response.text
 
 
@@ -90,7 +95,7 @@ def analyze_embedded_image_with_gemini(image):
             response_mime_type="application/json",
         ),
     )
-    my_logger.info(f"Embedded image analysis result:\n{response}")
+    # my_logger.info(f"Embedded image analysis result:\n{response}")
     return response.text
 
 
@@ -105,7 +110,7 @@ def analyze_ppt_with_gemini(text, tables, images):
             response_mime_type="application/json",
         ),
     )
-    my_logger.info(f"PPTX analysis result:\n{response}")
+    # my_logger.info(f"PPTX analysis result:\n{response}")
     return response.text
 
 

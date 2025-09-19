@@ -51,10 +51,6 @@ def get_set_go(input_file) -> dict:
 
                 anonymized_df = remove_pii_from_df(df.copy())
 
-                csv_buffer = io.StringIO()
-                anonymized_df.to_csv(csv_buffer, index=False)
-                csv_buffer.seek(0)
-
                 analyzed_text_json = analyze_dataframe_with_gemini(anonymized_df)
 
                 my_logger.info(f"Excel DataFrame:\n{df.head()}")
