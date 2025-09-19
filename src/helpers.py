@@ -2,8 +2,6 @@ import logging
 import json
 from pptx import Presentation
 from PyPDF2 import PdfReader
-from PIL import Image
-from io import BytesIO
 
 
 # my_logger.debug('This is a debug message.')

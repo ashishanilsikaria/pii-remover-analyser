@@ -1,7 +1,6 @@
 import io
 import streamlit as st
 from PIL import Image
-import pandas as pd
 
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine

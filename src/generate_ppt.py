@@ -1,7 +1,6 @@
 import math
 from pptx import Presentation
-from pptx.util import Inches, Pt, Emu
-from pptx.enum.text import PP_ALIGN, MSO_VERTICAL_ANCHOR
+from pptx.util import Inches, Pt
 
 
 def estimate_row_content_lines(
