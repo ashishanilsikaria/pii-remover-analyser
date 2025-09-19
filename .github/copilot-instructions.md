@@ -1,113 +1,51 @@
 # Copilot Instructions for PII Remover Analyser
 
-## Project Overview
-This is a security-focused document analysis tool built with Streamlit that processes uploaded files (images, PDFs, Excel, PowerPoint) using Google's Gemini AI to identify potential security vulnerabilities and PII risks.
+## Overview
+Streamlit app that cleans PII and analyzes uploaded files (images, XLSX, PPTX, PDF) with Google Gemini, then renders results in the UI and saves a PPTX summary. Security/PII focus throughout.
 
-## Architecture
-- **Entry Point**: `streamlit_app.py` - Streamlit web interface for file uploads
-- **Core Pipeline**: `pipeline.py:get_set_go()` - Main file processing router based on MIME types
-- **AI Analysis**: `gemini_data_analyzer.py` - Google Gemini API integration for security analysis
-- **Data Models**: `custom_types.py` - Type definitions for `ProcessedFile` and `filetypes` mapping
-- **Utilities**: `helpers.py` - File extraction, logging, and HTML formatting utilities
+## Architecture & Flow
+- UI: `src/streamlit_app.py` handles uploads, spinners, table rendering, and calls `pipeline.get_set_go()` per file.
+- Router: `src/pipeline.py:get_set_go(file)` branches by MIME type, logs, sanitizes content, and calls Gemini. Returns a JSON string parsed via `json.loads` to a dict.
+- AI: `src/gemini_data_analyzer.py` uses `google-genai` (`gemini-2.5-flash`, `thinking_budget=0`, `response_mime_type="application/json"`). Prompts enforce a strict JSON schema.
+- PII: `src/pii_remover.py` uses Presidio (spaCy `en_core_web_lg`) to redact images and anonymize text in DataFrames; engines are cached with `@st.cache_resource`.
+- Utilities: `src/helpers.py` provides PPTX/PDF extraction stubs, HTML list formatting, and a shared logger `my_logger` writing to `app.log`.
 
-## Key Integration Points
+## File-Type Handling (pipeline)
+- Images (`image/png|jpeg`): `remove_pii_from_image` → `analyze_image_with_gemini(image)` → parse JSON.
+- Excel (`.xlsx`): `pandas.read_excel` → `remove_pii_from_df` (string cells only) → `analyze_dataframe_with_gemini(df)` → parse JSON.
+- PowerPoint (`.pptx`): `extract_content_from_pptx` (text/tables/images) → anonymize tables with `remove_pii_from_df` → analyze embedded images individually → `analyze_ppt_with_gemini(text, tables_df, image_results)`.
+- PDF (`application/pdf`): `extract_content_from_pdf` currently returns text placeholder only; not yet analyzed with Gemini.
 
-### File Processing Flow
-1. Upload via Streamlit → `get_set_go()` → File type detection
-2. Extract content (text/images/tables) using format-specific helpers
-3. Send to Gemini with security analysis prompts → Structured JSON response
-4. Display results in HTML table format
+## JSON Contract (Gemini)
+- Expected shape (see `src/extras/gemini_sample_analysis_return.json`):
+  `{ "file_description": { "heading": str, "description": str }, "key_findings": [str, ...] }`.
+- Responses are parsed with `json.loads` inside `pipeline.py`; ensure Gemini returns valid JSON (no markdown fences).
 
-### Gemini AI Integration
-- Uses `google-genai` client with API key from `.env` file
-- **Critical**: All prompts use structured JSON output format defined in `prompt_for_output`
-- Response format: `{"file_description": {"heading": "", "description": ""}, "key_findings": []}`
-- Uses `gemini-2.5-flash` model with `thinking_budget=0`
+## UI & Output
+- Results mapped to `ProcessedFile` (see `src/models.py`) and displayed as an HTML table; `helpers.list_to_html_ol` renders `key_findings` lists.
+- PPT: `src/generate_ppt.py:create_presentation(data, output_filename)` currently produces static slides (does not yet render per-file rows passed from Streamlit).
 
-### Supported File Types
-Map in `custom_types.py:filetypes`:
-- Images: PNG/JPEG → Direct Gemini vision analysis
-- PowerPoint: PPTX → Extract text/tables/images → Combine analysis
-- Excel: XLSX → DataFrame processing (partial implementation)
-- PDF: Text extraction via PyPDF2 (partial implementation)
+## Conventions & Gotchas
+- Logging: use `helpers.my_logger` for consistent file + console logs. Avoid print.
+- Types: `models.ProcessedFile.key_findings` is typed `str` but code passes a list; keep the runtime behavior (list) consistent with UI expectations.
+- Presidio models: spaCy model `en_core_web_lg` is installed via `pyproject.toml`. Engines are heavy; rely on `@st.cache_resource`.
+- Gemini key: `gemini_data_analyzer.py` reads from `.env` via `dotenv.get_key(".env", "GEMINI_API_KEY")`; ensure a `.env` file exists.
 
-## Development Patterns
+## Developer Workflow
+- Install deps (Python 3.12+, uses uv):
+  - `uv sync`
+- Run app:
+  - `uv run streamlit run src/streamlit_app.py`
+  - or `uv run python main.py`
+- Try PPT generator alone:
+  - `uv run src/generate_ppt.py`
+- Logs: tail `app.log` for pipeline/Gemini results.
 
-### Error Handling
-- Comprehensive try-catch in `pipeline.py` with error logging
-- Returns `{"error": "..."}` format for consistency
-- Uses custom logger from `helpers.py:setup_logger()`
+## Extending/Changing Behavior
+- New file types: add a MIME branch in `pipeline.get_set_go` and reuse Presidio/Gemini helpers.
+- Gemini prompts: update `prompt`, `prompt_for_image`, `prompt_for_output` in `gemini_data_analyzer.py`. Keep response_mime_type JSON and parse in pipeline.
+- PDF analysis: implement text/image extraction in `helpers.extract_content_from_pdf` and wire into Gemini similarly to PPTX.
 
-### Code Organization
-- **Type safety**: Uses dataclasses and type hints throughout
-- **Logging**: Centralized logger instance `my_logger` writes to `app.log`
-- **Environment**: Uses `python-dotenv` for API key management
-- **Testing Strategy**: No existing framework - recommended approach:
-  - Unit tests: Test individual functions in `helpers.py` and `gemini_data_analyzer.py`
-  - Integration tests: Mock Gemini API responses using `gemini_sample_analysis_return.json`
-  - Streamlit tests: Use `test_streamlit.py` pattern for UI component testing
-  - File processing tests: Test each MIME type handler in `pipeline.py` with sample files
-
-### Streamlit Conventions
-- Wide layout: `st.set_page_config(layout="wide")`
-- Multi-file upload with type restrictions
-- HTML rendering: Uses `unsafe_allow_html=True` for formatted tables
-- Spinner feedback during processing
-
-### JSON Processing
-- **Critical Pattern**: Always use `helpers.py:strip_json_formatting()` to clean Gemini responses
-- Gemini may return JSON wrapped in markdown code blocks
-
-## External Dependencies
-- `presidio-analyzer/presidio-anonymizer`: PII detection framework with NLP engine support
-  - Currently unused but configured in `presidio_nlp_engine_config.py`
-  - Uses spaCy NLP models with entity mapping (PERSON, ORGANIZATION, LOCATION, etc.)
-  - Configured for multi-language support with confidence scoring
-- `google-genai`: Primary AI analysis engine  
-- `streamlit`: Web framework
-- `python-pptx`: PowerPoint processing
-- `PyPDF2`: PDF text extraction
-- `pandas`: Data manipulation
-- `PIL`: Image processing
-
-### Presidio Integration (Available but Unused)
-The project includes `presidio_nlp_engine_config.py` with a complete setup for:
-- spaCy-based NLP engine with custom entity mappings
-- RecognizerRegistry for predefined PII patterns
-- Low confidence score handling for organizations
-- Ready for integration with Gemini analysis pipeline
-
-## Development Commands
-- Run app: `streamlit run streamlit_app.py`
-- Dependency management: Uses `uv` (note `uv.lock` file)
-- Environment: Requires Python >=3.12
-
-## Testing Strategy
-Since no test framework currently exists, follow these patterns when adding tests:
-
-### Recommended Test Structure
-```
-tests/
-├── unit/
-│   ├── test_helpers.py          # Test file extraction, JSON cleaning
-│   ├── test_gemini_analyzer.py  # Mock Gemini API calls
-│   └── test_pipeline.py         # Test file type routing
-├── integration/
-│   ├── test_full_pipeline.py    # End-to-end file processing
-│   └── test_streamlit_ui.py     # UI component testing
-└── fixtures/
-    ├── sample_files/            # Test images, PDFs, PPTX
-    └── mock_responses/          # Gemini API response mocks
-```
-
-### Key Test Patterns
-- **Mock Gemini responses**: Use `gemini_sample_analysis_return.json` as template
-- **File processing**: Test each MIME type in `custom_types.py:filetypes`
-- **JSON cleaning**: Verify `strip_json_formatting()` handles markdown wrapping
-- **Error handling**: Test exception flows in `pipeline.py:get_set_go()`
-
-## Important Notes
-- **Security Focus**: All prompts emphasize security analysis and PII identification
-- **Incomplete Features**: PDF and Excel processing return data but don't send to Gemini yet
-- **Empty Files**: `main.py`, `pii_remover.py` are placeholder/empty
-- **Sample Data**: `gemini_sample_analysis_return.json` shows expected AI response format
+## External Integrations
+- Google Gemini (`google-genai`) for analysis; uses `Part.from_bytes` for images and plain text for tabular/text content.
+- Presidio Analyzer/Anonymizer/Image Redactor for PII with spaCy `en_core_web_lg` (see `src/presidio_nlp_engine_config.py`, custom recognizers in `patterns/`).
