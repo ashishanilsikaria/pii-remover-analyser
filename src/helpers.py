@@ -66,12 +66,6 @@ def list_to_html_ol(cell):
     return cell
 
 
-def create_pptx_report(findings):
-    # To do
-    # Take the findings and create a pptx report
-    return None
-
-
 def setup_logger(name, log_file, level=logging.INFO):
     """
     Sets up a logger that writes to a specified file and the console.
