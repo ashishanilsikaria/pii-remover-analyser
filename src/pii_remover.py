@@ -32,7 +32,7 @@ def remove_pii_from_text(input_text):
         results = analyzer_engine().analyze(
             text=input_text,
             language="en",
-            score_threshold=1.5,
+            score_threshold=0,
         )
 
         anonymized_text = anonymizer_engine().anonymize(
