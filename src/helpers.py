@@ -62,7 +62,7 @@ def extract_content_from_pdf(file):
                 content["images"].append(image_file_object.data)
 
         # st.image(content["images"][0], caption="Extracted Image", width="content")
-        my_logger.info(f"Extracted {type(content['images'][0])} images from PDF.")
+        # my_logger.info(f"Extracted {type(content['images'][0])} images from PDF.")
 
         return content
     except Exception as e:

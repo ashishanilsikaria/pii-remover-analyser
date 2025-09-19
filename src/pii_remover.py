@@ -39,9 +39,10 @@ def remove_pii_from_text(input_text):
         )
 
         # Debug: Display original and anonymized text
-        col1, col2 = st.columns(2)
-        col1.write(input_text)
-        col2.write(anonymized_text.text)
+
+        # col1, col2 = st.columns(2)
+        # col1.write(input_text)
+        # col2.write(anonymized_text.text)
 
         return anonymized_text.text
     except Exception as e:
@@ -66,13 +67,14 @@ def remove_pii_from_image(input_file):
         pii_removed_image = image_redactor.redact(image=image, fill=(255, 0, 0))  # type: ignore
 
         # Debug: Display original and redacted images
-        col1, col2 = st.columns(2)
-        col1.image(input_file, caption="Original Image", width="content")
-        col2.image(
-            pii_removed_image,  # type: ignore
-            caption="PII Redacted Image",
-            width="content",
-        )
+
+        # col1, col2 = st.columns(2)
+        # col1.image(input_file, caption="Original Image", width="content")
+        # col2.image(
+        #     pii_removed_image,  # type: ignore
+        #     caption="PII Redacted Image",
+        #     width="content",
+        # )
 
         return pii_removed_image
 
@@ -100,9 +102,11 @@ def remove_pii_from_df(df):
                         anonymized_df.at[index, column] = anonymized_value.text
 
         # Debug: Display original DataFrame and anonymized DataFrame
-        col1, col2 = st.columns(2)
-        col1.dataframe(df)
-        col2.dataframe(anonymized_df)
+
+        # col1, col2 = st.columns(2)
+        # col1.dataframe(df)
+        # col2.dataframe(anonymized_df)
+
         return anonymized_df
     except Exception as e:
         my_logger.error(f"Error removing pii from dataframe: {e}")

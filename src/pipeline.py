@@ -54,7 +54,7 @@ def get_set_go(input_file) -> dict:
 
                 analyzed_text_json = analyze_dataframe_with_gemini(anonymized_df)
 
-                my_logger.info(f"Excel DataFrame:\n{df.head()}")
+                # my_logger.info(f"Excel DataFrame:\n{df.head()}")
 
                 return json.loads(analyzed_text_json)  # type: ignore
 
