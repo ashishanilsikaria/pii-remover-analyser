@@ -1,7 +1,7 @@
 [project]
 name = "pii-remover-analyser"
 version = "0.1.0"
-description = "Add your description here"
+description = "A streamlit ui based project to analyse files with AI after removing any PII"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

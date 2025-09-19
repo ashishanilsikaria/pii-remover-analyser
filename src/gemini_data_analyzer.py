@@ -153,30 +153,3 @@ def analyze_pdf_with_gemini(text, images):
         my_logger.error(f"Error analyzing pdf content with gemini: {e}")
         return {"error": str(e)}
 
-
-# # using bytes
-# def analyze_image_with_gemini_direct(image_bytes):
-#     response = client.models.generate_content(
-#         model="gemini-2.5-flash",
-#         contents=["What is this image?", image_bytes],
-#         config=types.GenerateContentConfig(
-#             thinking_config=types.ThinkingConfig(thinking_budget=0),
-#             response_mime_type="application/json",
-#         ),
-#     )
-
-#     return response.text
-
-
-# using raw data
-# def analyze_image_bytes_with_gemini(image_bytes):
-#     response = client.models.generate_content(
-#         model="gemini-2.5-flash",
-#         contents=[f"{prompt_for_image_analysis} {image_bytes}"],
-#         config=types.GenerateContentConfig(
-#             thinking_config=types.ThinkingConfig(thinking_budget=0),
-#             response_mime_type="application/json",
-#         ),
-#     )
-
-#     return response.text
