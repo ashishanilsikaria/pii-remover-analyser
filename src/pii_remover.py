@@ -1,3 +1,4 @@
+import io
 import streamlit as st
 from PIL import Image
 import pandas as pd
@@ -54,7 +55,15 @@ def remove_pii_from_image(input_file):
 
         image_redactor = image_redactor_engine()
 
-        image = Image.open(input_file)
+        if type(input_file) == bytes:
+            image = Image.open(io.BytesIO(input_file))
+
+        elif hasattr(input_file, "mode") and hasattr(input_file, "size"):
+            image = input_file
+
+        else:
+            image = Image.open(input_file)
+
         pii_removed_image = image_redactor.redact(image=image, fill=(255, 0, 0))  # type: ignore
 
         # Debug: Display original and redacted images
@@ -69,7 +78,7 @@ def remove_pii_from_image(input_file):
         return pii_removed_image
 
     except Exception as e:
-        my_logger.error(f"Error removing pii from file {input_file.name}: {e}")
+        my_logger.error(f"Error removing pii from file {input_file}: {e}")
         return {"error": str(e)}
 
 

@@ -37,81 +37,100 @@ Here is the exact format to follow:
 
 # Analyze direct image input
 def analyze_image_with_gemini(image, file_type):
-    buf = io.BytesIO()
-    image.save(buf, format="PNG")
-    data = buf.getvalue()
-    # my_file = client.files.upload(file=buf)
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=[
-            prompt,
-            prompt_for_image,
-            prompt_for_output,
-            genai.types.Part.from_bytes(data=data, mime_type="image/png"),
-        ],
-        config=types.GenerateContentConfig(
-            thinking_config=types.ThinkingConfig(thinking_budget=0),
-            response_mime_type="application/json",
-        ),
-    )
-    # my_logger.info(f"Image analysis result:\n{response.text}")
-    return response.text
+    try:
+        buf = io.BytesIO()
+        image.save(buf, format="PNG")
+        data = buf.getvalue()
+        # my_file = client.files.upload(file=buf)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[
+                prompt,
+                prompt_for_image,
+                prompt_for_output,
+                genai.types.Part.from_bytes(data=data, mime_type="image/png"),
+            ],
+            config=types.GenerateContentConfig(
+                thinking_config=types.ThinkingConfig(thinking_budget=0),
+                response_mime_type="application/json",
+            ),
+        )
+        # my_logger.info(f"Image analysis result:\n{response.text}")
+        return response.text
+    except Exception as e:
+        my_logger.error(f"Error analyzing image with gemini: {e}")
+        return {"error": str(e)}
 
 
 # Analyze dataframe content
 def analyze_dataframe_with_gemini(df):
-    content = f"The following data was found in the excel file:{df.head().to_string()} "
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=[
-            prompt,
-            content,
-            prompt_for_output,
-            "There could be some inconsistency in the data, or it could contain NaN values. Please ignore those.",
-        ],
-        config=types.GenerateContentConfig(
-            thinking_config=types.ThinkingConfig(thinking_budget=0),
-            response_mime_type="application/json",
-        ),
-    )
-    # my_logger.info(f"DataFrame analysis result:\n{response}")
-    return response.text
+    try:
+        content = (
+            f"The following data was found in the excel file:{df.head().to_string()} "
+        )
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[
+                prompt,
+                content,
+                prompt_for_output,
+                "There could be some inconsistency in the data, or it could contain NaN values. Please ignore those.",
+            ],
+            config=types.GenerateContentConfig(
+                thinking_config=types.ThinkingConfig(thinking_budget=0),
+                response_mime_type="application/json",
+            ),
+        )
+        # my_logger.info(f"DataFrame analysis result:\n{response}")
+        return response.text
+    except Exception as e:
+        my_logger.error(f"Error analyzing dataframe with gemini: {e}")
+        return {"error": str(e)}
 
 
 # Analyze embedded image in pptx
 def analyze_embedded_image_with_gemini(image):
-    buf = io.BytesIO()
-    image.save(buf, format="PNG")
-    data = buf.getvalue()
+    try:
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=[
-            prompt,
-            genai.types.Part.from_bytes(data=data, mime_type="image/png"),
-        ],
-        config=genai.types.GenerateContentConfig(
-            thinking_config=genai.types.ThinkingConfig(thinking_budget=0),
-            response_mime_type="application/json",
-        ),
-    )
-    # my_logger.info(f"Embedded image analysis result:\n{response}")
-    return response.text
+        buf = io.BytesIO()
+        image.save(buf, format="PNG")
+        data = buf.getvalue()
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[
+                prompt,
+                genai.types.Part.from_bytes(data=data, mime_type="image/png"),
+            ],
+            config=genai.types.GenerateContentConfig(
+                thinking_config=genai.types.ThinkingConfig(thinking_budget=0),
+                response_mime_type="application/json",
+            ),
+        )
+        # my_logger.info(f"Embedded image analysis result:\n{response.text}")
+        return response.text
+    except Exception as e:
+        my_logger.error(f"Error analyzing embedded image with gemini: {e}")
+        return {"error": str(e)}
 
 
 # Analyze pptx content
 def analyze_ppt_with_gemini(text, tables, images):
-    content = f"The following text:{text}, tables:{tables},and images:{images} were found in the pptx file."
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=[prompt, content, prompt_for_output],
-        config=types.GenerateContentConfig(
-            thinking_config=types.ThinkingConfig(thinking_budget=0),
-            response_mime_type="application/json",
-        ),
-    )
-    # my_logger.info(f"PPTX analysis result:\n{response}")
-    return response.text
+    try:
+        content = f"The following text:{text}, tables:{tables},and images:{images} were found in the pptx file."
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[prompt, content, prompt_for_output],
+            config=types.GenerateContentConfig(
+                thinking_config=types.ThinkingConfig(thinking_budget=0),
+                response_mime_type="application/json",
+            ),
+        )
+        # my_logger.info(f"PPTX analysis result:\n{response}")
+        return response.text
+    except Exception as e:
+        my_logger.error(f"Error analyzing pptx content with gemini: {e}")
+        return {"error": str(e)}
 
 
 # # using bytes

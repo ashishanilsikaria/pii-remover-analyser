@@ -84,17 +84,33 @@ def get_set_go(input_file) -> dict:
 
                 images = extracted_content_from_pptx["images"]
                 image_analysis_by_ai = []
-                if images:
-                    for image in images:
-                        data = image
-                        image = Image.open(io.BytesIO(data))
+                try:
+                    if images:
+                        for image in images:
+                            data = image[0]
+                            image = Image.open(io.BytesIO(data))
+                            try:
+                                pii_removed_image = remove_pii_from_image(image)
+                            except Exception as e:
+                                my_logger.error(f"Error removing PII from image: {e}")
+                                return {"error": str(e)}
+                            try:
+                                image_analysis_result = (
+                                    analyze_embedded_image_with_gemini(
+                                        pii_removed_image
+                                    )
+                                )
+                                image_analysis_by_ai.append(image_analysis_result)
+                            except Exception as e:
+                                my_logger.error(
+                                    f"Error analyzing image with Gemini: {e}"
+                                )
+                                return {"error": str(e)}
 
-                        pii_removed_image = remove_pii_from_image(image)
-                        image_analysis_result = analyze_embedded_image_with_gemini(
-                            pii_removed_image
-                        )
-
-                        image_analysis_by_ai.append(image_analysis_result)
+                except Exception as e:
+                    my_logger.error(
+                        f"Error processing images in PPTX file {input_file}: {e}"
+                    )
 
                 analyzed_text_json = analyze_ppt_with_gemini(
                     text, anonymized_df, image_analysis_by_ai
