@@ -1,0 +1,11 @@
+google-genai
+pandas
+Pillow
+presidio_analyzer
+presidio_anonymizer
+presidio_image_redactor
+protobuf
+PyPDF2
+python-dotenv
+python_pptx
+streamlit
