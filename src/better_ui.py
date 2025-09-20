@@ -27,6 +27,8 @@ if "ppt_rows" not in st.session_state:
     st.session_state["ppt_rows"] = []
 if "files_key" not in st.session_state:
     st.session_state["files_key"] = None
+if "results_map" not in st.session_state:
+    st.session_state["results_map"] = {}
 
 
 def create_results_table(results: List[ProcessedFile]) -> str:
@@ -65,39 +67,38 @@ def create_results_table(results: List[ProcessedFile]) -> str:
 results: List[ProcessedFile] = st.session_state["results"]
 
 if uploaded_files:
-    current_files_key = [
-        (f.name, getattr(f, "size", None), f.type) for f in uploaded_files
-    ]
+    new_processed = False
 
-    # Only process if the uploaded files changed
-    if st.session_state["files_key"] != current_files_key:
-        # Reset caches for new file set
-        st.session_state["results"] = []
-        st.session_state["ppt_rows"] = []
-        results = st.session_state["results"]
+    # Build keys for current uploads
+    def _key(f):
+        return (f.name, getattr(f, "size", None), f.type)
 
+    current_keys = [_key(f) for f in uploaded_files]
+    results_map = st.session_state["results_map"]
+
+    # Determine new files to process
+    new_files = [f for f in uploaded_files if _key(f) not in results_map]
+
+    if new_files:
+        new_processed = True
         # Create placeholders for dynamic updates
         progress_container = st.container()
         results_container = st.empty()
 
-        # Show overall progress
         with progress_container:
             st.subheader("Processing Files")
             progress_bar = st.progress(0)
             status_text = st.empty()
 
-        total_files = len(uploaded_files)
+        total_new = len(new_files)
 
-        for i, file in enumerate(uploaded_files):
-            # Update progress
-            current_progress = (i + 1) / total_files
-            progress_bar.progress(current_progress)
-            status_text.text(f"Processing {file.name}... ({i+1}/{total_files})")
+        for i, file in enumerate(new_files):
+            progress_bar.progress((i + 1) / max(total_new, 1))
+            status_text.text(f"Processing {file.name}... ({i+1}/{total_new})")
 
             with st.spinner(f"Processing {file.name}..."):
                 try:
                     data_from_pipeline = get_set_go(file)
-
                     if data_from_pipeline:
                         if "error" in data_from_pipeline:
                             st.error(
@@ -118,60 +119,62 @@ if uploaded_files:
                                 ],
                                 key_findings=data_from_pipeline["key_findings"],
                             )
-                            results.append(processed)
+                            results_map[_key(file)] = processed
 
-                            st.session_state["ppt_rows"].append(
-                                [
-                                    processed.file_name,
-                                    processed.file_type,
-                                    processed.file_heading,
-                                    processed.file_description,
-                                    processed.key_findings,
-                                ]
-                            )
-
-                            # Update the results display immediately
+                            # Incremental display of all current files (processed or cached)
                             with results_container.container():
                                 st.subheader("File Analysis Output")
-                                table_rows = []
-                                for r in results:
-                                    table_rows.append(
-                                        {
-                                            "File Name": r.file_name,
-                                            "File Type": r.file_type,
-                                            "File Description": f"<b>{r.file_heading}</b>"
-                                            + "<br>"
-                                            + r.file_description,
-                                            "Key Findings": r.key_findings,
-                                        }
+                                current_results = [
+                                    results_map[k]
+                                    for k in current_keys
+                                    if k in results_map
+                                ]
+                                table_rows = [
+                                    {
+                                        "File Name": r.file_name,
+                                        "File Type": r.file_type,
+                                        "File Description": f"<b>{r.file_heading}</b>"
+                                        + "<br>"
+                                        + r.file_description,
+                                        "Key Findings": r.key_findings,
+                                    }
+                                    for r in current_results
+                                ]
+                                if table_rows:
+                                    df = pd.DataFrame(table_rows)
+                                    df["Key Findings"] = df["Key Findings"].apply(
+                                        list_to_html_ol
                                     )
-
-                                df = pd.DataFrame(table_rows)
-                                df["Key Findings"] = df["Key Findings"].apply(
-                                    list_to_html_ol
-                                )
-                                st.markdown(
-                                    df.to_html(escape=False), unsafe_allow_html=True
-                                )
-
+                                    st.markdown(
+                                        df.to_html(escape=False),
+                                        unsafe_allow_html=True,
+                                    )
                 except Exception as e:
                     st.error(f"Error processing {file.name}: {e}")
                     my_logger.error(f"Error processing {file.name}: {e}")
 
-        # Final progress update and cache the file key
         progress_bar.progress(1.0)
-        status_text.text(f"Completed processing all {total_files} files!")
-        st.session_state["files_key"] = current_files_key
+        status_text.text(f"Completed processing {total_new} new file(s)!")
 
-        # Show final success message if any files were processed successfully
-        if results:
-            st.success(
-                f"Successfully processed {len(results)} out of {total_files} files."
-            )
-    else:
-        # Files unchanged; use cached results
-        if st.session_state["results"]:
-            st.info("Using cached analysis. Click Generate PPT when ready.")
+    # Build results list for currently uploaded files from cache
+    current_results = [results_map[k] for k in current_keys if k in results_map]
+    st.session_state["results"] = current_results
+
+    # Update PPT rows to reflect only current uploads
+    st.session_state["ppt_rows"] = [
+        [
+            r.file_name,
+            r.file_type,
+            r.file_heading,
+            r.file_description,
+            r.key_findings,
+        ]
+        for r in current_results
+    ]
+
+    # Render once: if incremental rendering didn't occur in this run
+    if not new_processed:
+        if current_results:
             df = pd.DataFrame(
                 [
                     {
@@ -182,12 +185,14 @@ if uploaded_files:
                         + r.file_description,
                         "Key Findings": r.key_findings,
                     }
-                    for r in st.session_state["results"]
+                    for r in current_results
                 ]
             )
             df["Key Findings"] = df["Key Findings"].apply(list_to_html_ol)
             st.subheader("File Analysis Output")
             st.markdown(df.to_html(escape=False), unsafe_allow_html=True)
+        else:
+            st.info("Upload files to see analysis results.")
 
 if generate_ppt:
     try:
