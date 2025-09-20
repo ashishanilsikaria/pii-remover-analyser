@@ -19,6 +19,10 @@ uploaded_files = st.file_uploader(
 
 results: List[ProcessedFile] = []
 
+generate_ppt = st.button(label="Generate PPT from analysis")
+download_button = st.download_button
+table_rows_for_ppt = []
+
 if uploaded_files:
     for file in uploaded_files:
         with st.spinner(f"Processing {file.name}..."):
@@ -48,8 +52,6 @@ if uploaded_files:
 
 if results:
     table_rows_for_ui_display = []
-
-    table_rows_for_ppt = []
 
     for r in results:
         table_rows_for_ui_display.append(
@@ -81,4 +83,22 @@ if results:
 
     st.markdown(df.to_html(escape=False), unsafe_allow_html=True)
 
-    create_presentation(table_rows_for_ppt, output_filename="analysis_output.pptx")
+
+if generate_ppt:
+    try:
+        if not results:
+            st.warning("Please upload files before generating PPT.")
+            st.stop()
+
+        create_presentation(table_rows_for_ppt, output_filename="analysis_output.pptx")
+        download_button(
+            label="Download PPT",
+            data=open("analysis_output.pptx", "rb").read(),
+            file_name="analysis_output.pptx",
+            mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            on_click="ignore",
+        )
+
+    except Exception as e:
+        st.error(f"Error generating PPT: {e}")
+        my_logger.error(f"Error generating PPT: {e}")
