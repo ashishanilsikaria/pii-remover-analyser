@@ -39,17 +39,12 @@ def create_presentation(data, output_filename):
             "title": "Approach Taken",
             "content": "Populate this slide with the strategy you used to address the case challenges.",
         },
-        # {
-        #     "title": "Functional Design Diagram",
-        #     "content": None,
-        # },
     ]
 
     for info in info_slides:
         slide = prs.slides.add_slide(slide_layout_content)
         slide.shapes.title.text = info["title"]  # type: ignore
         content_shape = slide.placeholders[1]
-        # if info["content"]:
         content_shape.text = info["content"]  # type: ignore
         for paragraph in content_shape.text_frame.paragraphs:  # type: ignore
             paragraph.font.size = Pt(20)
@@ -67,11 +62,20 @@ def create_presentation(data, output_filename):
     num_data_slides = math.ceil(len(data) / rows_per_slide)
 
     slide_layout = prs.slide_layouts[5]
+    empty_slide = prs.slide_layouts[6]
+    first_table_slide = True
 
     for i in range(num_data_slides):
-        slide = prs.slides.add_slide(slide_layout)
-        title = slide.shapes.title
-        title.text = "File Analysis Sample Output"  # type: ignore
+
+        if first_table_slide:
+            slide = prs.slides.add_slide(slide_layout)
+            title = slide.shapes.title
+            title.text = "File Analysis Output"  # type: ignore
+            first_table_slide = False
+            top = Inches(1.5)
+        else:
+            slide = prs.slides.add_slide(empty_slide)
+            top = Inches(0.5)
 
         start_index = i * rows_per_slide
         end_index = start_index + rows_per_slide
@@ -80,7 +84,7 @@ def create_presentation(data, output_filename):
         num_rows_in_table = len(slide_data) + 1
         num_cols = 4
         left = Inches(0.25)
-        top = Inches(1.5)
+
         width = Inches(9.5)
         height = Inches(5.5)
 
@@ -93,7 +97,6 @@ def create_presentation(data, output_filename):
         table.columns[2].width = Inches(3.6)
         table.columns[3].width = Inches(3.7)
 
-        # Populate header row
         for col_idx, header_text in enumerate(ppt_headers):
             cell = table.cell(0, col_idx)
             cell.text = header_text
@@ -102,62 +105,52 @@ def create_presentation(data, output_filename):
             p.font.size = Pt(14)
             p.alignment = PP_ALIGN.CENTER
             cell.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
-            # Set row height to auto-adjust to text content
-        table.rows[0].height = Inches(0.7)  # Auto height for header row
 
-        # Populate data rows
+        table.rows[0].height = Inches(0.7)
+
         for row_idx, record in enumerate(slide_data, start=1):
-            # --- Column 1: File Name ---
             cell = table.cell(row_idx, 0)
             cell.text = record[0]
 
-            # --- Column 2: File Type ---
             cell = table.cell(row_idx, 1)
             cell.text = record[1]
 
-            # Set formatting for simple text cells (File Name, File Type)
             for col_idx in [0, 1]:
                 cell = table.cell(row_idx, col_idx)
-                # cell.vertical_anchor = MSO_VERTICAL_ANCHOR.TOP
                 tf = cell.text_frame
                 tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
-                tf.paragraphs[0].font.size = Pt(11)
+                tf.paragraphs[0].font.size = Pt(12)
 
-            # --- Column 3: File Description (merged with heading) ---
             cell = table.cell(row_idx, 2)
-            cell.vertical_anchor = MSO_VERTICAL_ANCHOR.TOP
             tf = cell.text_frame
-            # tf.clear()
-            tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE  # Apply autofit
+            tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
 
             p_heading = tf.paragraphs[0]
             p_heading.text = record[2]
             p_heading.font.bold = True
-            p_heading.font.size = Pt(11)
+            p_heading.font.size = Pt(12)
 
             p_desc = tf.add_paragraph()
             p_desc.text = record[3]
-            p_desc.font.size = Pt(10)
+            p_desc.font.size = Pt(12)
 
-            # --- Column 4: Key Findings (bullet points) ---
             cell = table.cell(row_idx, 3)
             cell.vertical_anchor = MSO_VERTICAL_ANCHOR.TOP
             tf = cell.text_frame
-            # tf.clear()
-            tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE  # Apply autofit
+            tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
             first = 0
             for finding in record[4]:
                 if first == 0:
                     p_finding = tf.paragraphs[0]
                     p_finding.text = f"• {finding}"
                     p_finding.level = 0
-                    p_finding.font.size = Pt(10)
+                    p_finding.font.size = Pt(11)
                     first = 1
                 else:
                     p_finding = tf.add_paragraph()
                     p_finding.text = f"• {finding}"
                     p_finding.level = 0
-                    p_finding.font.size = Pt(10)
+                    p_finding.font.size = Pt(11)
 
     prs.save(output_filename)
 
