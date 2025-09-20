@@ -182,10 +182,6 @@ except Exception as e:
     return {"error": str(e)}
 ```
 
-### Testing & Debugging
-
-Enable debug mode by uncommenting debug sections in `pii_remover.py` to see before/after comparisons in the Streamlit UI.
-
 ## 📦 Dependencies
 
 ### Core Dependencies
