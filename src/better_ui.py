@@ -5,8 +5,9 @@ from typing import List
 from pipeline import get_set_go
 from helpers import list_to_html_ol, my_logger
 from models import ProcessedFile, filetypes
+from generate_ppt import create_presentation
 
-st.set_page_config(page_title="Ashish", layout="wide")
+st.set_page_config(page_title="File Analyser", layout="wide")
 st.title("PII remover and analyser")
 
 
@@ -15,6 +16,10 @@ uploaded_files = st.file_uploader(
     type=["png", "jpg", "jpeg", "pdf", "xlsx", "pptx"],
     accept_multiple_files=True,
 )
+
+generate_ppt = st.button(label="Generate PPT from analysis")
+download_button = st.download_button
+table_rows_for_ppt = []
 
 
 def create_results_table(results: List[ProcessedFile]) -> str:
@@ -33,6 +38,15 @@ def create_results_table(results: List[ProcessedFile]) -> str:
                 + r.file_description,
                 "Key Findings": r.key_findings,
             }
+        )
+        table_rows_for_ppt.append(
+            [
+                r.file_name,
+                r.file_type,
+                r.file_heading,
+                r.file_description,
+                r.key_findings,
+            ]
         )
 
     df = pd.DataFrame(table_rows)
@@ -126,3 +140,22 @@ if uploaded_files:
     # Show final success message if any files were processed successfully
     if results:
         st.success(f"Successfully processed {len(results)} out of {total_files} files.")
+
+if generate_ppt:
+    try:
+        if not results:
+            st.warning("Please upload files before generating PPT.")
+            st.stop()
+
+        create_presentation(table_rows_for_ppt, output_filename="analysis_output.pptx")
+        download_button(
+            label="Download PPT",
+            data=open("analysis_output.pptx", "rb").read(),
+            file_name="analysis_output.pptx",
+            mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            on_click="ignore",
+        )
+
+    except Exception as e:
+        st.error(f"Error generating PPT: {e}")
+        my_logger.error(f"Error generating PPT: {e}")

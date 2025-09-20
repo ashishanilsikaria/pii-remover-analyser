@@ -56,7 +56,7 @@ def create_presentation(data, output_filename):
     system_design_slide = prs.slides.add_slide(prs.slide_layouts[5])
     system_design_slide.shapes.title.text = "Functional Design Diagram"  # type: ignore
     img_path = os.path.join(base_dir, "assets", "system_design.png")
-    left = Inches(1)
+    left = Inches(0)
     top = Inches(1.5)
     height = Inches(6)
     system_design_slide.shapes.add_picture(img_path, left, top, height=height)

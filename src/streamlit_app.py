@@ -7,8 +7,8 @@ from helpers import list_to_html_ol, my_logger
 from models import ProcessedFile, filetypes
 from generate_ppt import create_presentation
 
-st.set_page_config(page_title="Ashish", layout="wide")
-st.title("PII remover and analyser")
+st.set_page_config(page_title="File Analysis", layout="wide")
+st.title("PII Remover and Analyser")
 
 
 uploaded_files = st.file_uploader(
