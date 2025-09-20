@@ -1,6 +1,7 @@
 import io
 import dotenv
-
+import os
+import streamlit as st
 from google import genai
 from google.genai import types
 
@@ -9,6 +10,31 @@ from helpers import my_logger
 dotenv.load_dotenv()
 
 GEMINI_API_KEY = dotenv.get_key(".env", "GEMINI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+if not GEMINI_API_KEY:
+    if "GEMINI_API_KEY" in st.session_state:
+        GEMINI_API_KEY = st.session_state.GEMINI_API_KEY
+    else:
+        st.sidebar.warning("Gemini API Key Required")
+        api_key_input = st.sidebar.text_input(
+            "Enter your Gemini API Key:",
+            type="password",
+            help="Get your API key from Google AI Studio",
+        )
+
+        if api_key_input:
+            st.session_state.GEMINI_API_KEY = api_key_input
+            GEMINI_API_KEY = api_key_input
+            st.sidebar.success("API Key saved!")
+            st.rerun()
+        else:
+            st.error("Please enter your Gemini API Key in the sidebar to continue.")
+            st.stop()
+
+if not GEMINI_API_KEY:
+    st.error("Gemini API Key is required to proceed.")
+    st.stop()
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
