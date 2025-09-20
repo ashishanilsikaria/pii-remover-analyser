@@ -20,7 +20,6 @@ uploaded_files = st.file_uploader(
 generate_ppt = st.button(label="Generate PPT from analysis")
 download_button = st.download_button
 
-# Initialize session state stores
 if "results" not in st.session_state:
     st.session_state["results"] = []
 if "ppt_rows" not in st.session_state:
@@ -32,7 +31,6 @@ if "results_map" not in st.session_state:
 
 
 def create_results_table(results: List[ProcessedFile]) -> str:
-    """Create HTML table from results for dynamic display"""
     if not results:
         return ""
 
@@ -69,19 +67,16 @@ results: List[ProcessedFile] = st.session_state["results"]
 if uploaded_files:
     new_processed = False
 
-    # Build keys for current uploads
     def _key(f):
         return (f.name, getattr(f, "size", None), f.type)
 
     current_keys = [_key(f) for f in uploaded_files]
     results_map = st.session_state["results_map"]
 
-    # Determine new files to process
     new_files = [f for f in uploaded_files if _key(f) not in results_map]
 
     if new_files:
         new_processed = True
-        # Create placeholders for dynamic updates
         progress_container = st.container()
         results_container = st.empty()
 
@@ -121,7 +116,6 @@ if uploaded_files:
                             )
                             results_map[_key(file)] = processed
 
-                            # Incremental display of all current files (processed or cached)
                             with results_container.container():
                                 st.subheader("File Analysis Output")
                                 current_results = [
@@ -156,11 +150,9 @@ if uploaded_files:
         progress_bar.progress(1.0)
         status_text.text(f"Completed processing {total_new} new file(s)!")
 
-    # Build results list for currently uploaded files from cache
     current_results = [results_map[k] for k in current_keys if k in results_map]
     st.session_state["results"] = current_results
 
-    # Update PPT rows to reflect only current uploads
     st.session_state["ppt_rows"] = [
         [
             r.file_name,
@@ -172,7 +164,6 @@ if uploaded_files:
         for r in current_results
     ]
 
-    # Render once: if incremental rendering didn't occur in this run
     if not new_processed:
         if current_results:
             df = pd.DataFrame(
