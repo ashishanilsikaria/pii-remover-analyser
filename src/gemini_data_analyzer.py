@@ -152,4 +152,3 @@ def analyze_pdf_with_gemini(text, images):
     except Exception as e:
         my_logger.error(f"Error analyzing pdf content with gemini: {e}")
         return {"error": str(e)}
-

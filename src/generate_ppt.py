@@ -37,7 +37,11 @@ def create_presentation(data, output_filename):
         },
         {
             "title": "Approach Taken",
-            "content": "Populate this slide with the strategy you used to address the case challenges.",
+            "content": (
+                "1. PII Cleansing and Anonymization: Used Microsoft Presidio (spaCy en_core_web_lg plus custom YAML recognizers) to detect and anonymize PII in text and tables, and ImageRedactorEngine to mask text-based PII in images; engines are cached for performance.\n\n"
+                "2. Multi-format Pre-processing: A MIME-type router standardizes inputs across PNG/JPG, XLSX, PPTX, and PDF using python-pptx (text/tables/images), PyPDF2 (text/images), pandas (read_excel), and PIL (images). All sanitized content is normalized into a consistent JSON structure.\n\n"
+                "3. Analysis and Reporting: Google Gemini is prompted as a security consultant to return strict JSON with a heading, description, and 3–4 key findings. Results are rendered in an interactive UI with bullet-point findings and exported to a polished PowerPoint summarizing each file’s insights."
+            ),
         },
     ]
 
@@ -153,4 +157,3 @@ def create_presentation(data, output_filename):
                     p_finding.font.size = Pt(11)
 
     prs.save(output_filename)
-
