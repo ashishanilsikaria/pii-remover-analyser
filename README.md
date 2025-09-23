@@ -7,32 +7,32 @@
 
 A sophisticated **Streamlit-based security analysis tool** that automatically removes Personally Identifiable Information (PII) from various file formats and generates intelligent security insights using Google Gemini AI.
 
-## 🌟 Features
+## Features
 
-### 📁 Multi-Format Support
+### Multi-Format Support
 - **Images**: PNG, JPG, JPEG with visual PII redaction
 - **Documents**: PDF text and image extraction with PII removal
 - **Presentations**: PPTX content analysis including text, tables, and embedded images
 - **Spreadsheets**: Excel files with DataFrame anonymization
 - **Batch Processing**: Upload and process multiple files simultaneously
 
-### 🔒 Advanced PII Detection & Removal
+### Advanced PII Detection & Removal
 - **Microsoft Presidio Integration**: Industry-standard PII detection and anonymization
 - **Custom Recognition Patterns**: Extensible YAML-based pattern definitions
 - **Multi-Modal Processing**: Text, image, and structured data PII removal
 - **Entity Mapping**: Consistent PII detection across different content types
 
-### 🤖 AI-Powered Analysis
+### AI-Powered Analysis
 - **Google Gemini Integration**: Intelligent security insights and recommendations
 - **Structured Reporting**: JSON-formatted analysis with key findings
 - **Contextual Understanding**: AI analysis of anonymized content for security assessment
 
-### 📊 Professional Reporting
+### Professional Reporting
 - **PowerPoint Generation**: Automated presentation creation with findings
 - **Interactive UI**: Real-time processing status and results visualization
 - **Detailed Logging**: Comprehensive error handling and debugging information
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Python 3.12 or higher
@@ -73,7 +73,7 @@ A sophisticated **Streamlit-based security analysis tool** that automatically re
    streamlit run src/streamlit_app.py
    ```
 
-## 📋 Usage
+## Usage
 
 1. **Launch the Application**: Open your browser to the Streamlit interface (typically `http://localhost:8501`)
 
@@ -88,7 +88,7 @@ A sophisticated **Streamlit-based security analysis tool** that automatically re
 
 4. **View Results**: Review the analysis results and download generated reports
 
-## 🏗️ Architecture
+## Architecture
 
 The application follows a **pipeline pattern** with these core components:
 
@@ -116,7 +116,7 @@ Upload → PII Removal → AI Analysis → Report Generation
 | **PPTX**   | Text/tables/images extraction | Individual content PII removal | Combined multi-modal analysis   |
 | **PDF**    | Text and image extraction     | Separate text/image processing | Unified content analysis        |
 
-## 🔧 Configuration
+## Configuration
 
 ### Custom PII Patterns
 
@@ -141,7 +141,7 @@ recognizers:
 | ---------------- | ------------------------------------ | -------- |
 | `GEMINI_API_KEY` | Google Gemini API authentication key | Yes      |
 
-## 🛠️ Development
+## Development
 
 ### Project Structure
 ```
@@ -182,7 +182,7 @@ except Exception as e:
     return {"error": str(e)}
 ```
 
-## 📦 Dependencies
+## Dependencies
 
 ### Core Dependencies
 - **Streamlit**: Web application framework
@@ -199,7 +199,7 @@ except Exception as e:
 - **black**: Code formatting
 - **pipreqs**: Dependency management
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -207,17 +207,17 @@ except Exception as e:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🔗 Related Projects
+## Related Projects
 
 - [Microsoft Presidio](https://microsoft.github.io/presidio/) - Privacy and PII detection
 - [Google Gemini](https://ai.google.dev/) - AI analysis and insights
 - [Streamlit](https://streamlit.io/) - Web application framework
 
-## 📞 Support
+##  Support
 
 For support, issues, or feature requests, please [open an issue](https://github.com/ashishanilsikaria/pii-remover-analyser/issues) on GitHub.
 
