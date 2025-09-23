@@ -58,9 +58,8 @@ A sophisticated **Streamlit-based security analysis tool** that automatically re
    pip install .
    ```
 
-3. **Set up environment variables**
+3. **Set up environment variables (Optional)**
    ```bash
-   cp .env.example .env
    # Edit .env and add your Gemini API key
    echo "GEMINI_API_KEY=your_gemini_api_key_here" > .env
    ```
