@@ -4,6 +4,7 @@ import os
 import streamlit as st
 from google import genai
 from google.genai import types
+import json
 
 from helpers import my_logger
 
@@ -86,7 +87,7 @@ def analyze_image_with_gemini(image):
         return response.text
     except Exception as e:
         my_logger.error(f"Error analyzing image with gemini: {e}")
-        return {"error": str(e)}
+        return json.dumps({"error": str(e)})
 
 
 # Analyze dataframe content
@@ -112,7 +113,7 @@ def analyze_dataframe_with_gemini(df):
         return response.text
     except Exception as e:
         my_logger.error(f"Error analyzing dataframe with gemini: {e}")
-        return {"error": str(e)}
+        return json.dumps({"error": str(e)})
 
 
 # Analyze embedded image in pptx
@@ -139,7 +140,7 @@ def analyze_embedded_image_with_gemini(image):
         return response.text
     except Exception as e:
         my_logger.error(f"Error analyzing embedded image with gemini: {e}")
-        return {"error": str(e)}
+        return json.dumps({"error": str(e)})
 
 
 # Analyze pptx content
@@ -158,7 +159,7 @@ def analyze_ppt_with_gemini(text, tables, images):
         return response.text
     except Exception as e:
         my_logger.error(f"Error analyzing pptx content with gemini: {e}")
-        return {"error": str(e)}
+        return json.dumps({"error": str(e)})
 
 
 # Analyze pdf content
@@ -177,4 +178,4 @@ def analyze_pdf_with_gemini(text, images):
         return response.text
     except Exception as e:
         my_logger.error(f"Error analyzing pdf content with gemini: {e}")
-        return {"error": str(e)}
+        return json.dumps({"error": str(e)})
