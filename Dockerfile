@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     tesseract-ocr \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt ./
+COPY pyproject.toml ./
 
 RUN pip3 install --no-cache-dir spacy
 
