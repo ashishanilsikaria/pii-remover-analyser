@@ -88,34 +88,6 @@ A sophisticated **Streamlit-based security analysis tool** that automatically re
 
 4. **View Results**: Review the analysis results and download generated reports
 
-<!-- ## Architecture
-
-The application follows a **pipeline pattern** with these core components:
-
-```
-Upload → PII Removal → AI Analysis → Report Generation -->
-```
-
-<!-- ### Key Components
-
-- **`main.py`**: Application entry point
-- **`src/streamlit_app.py`**: Streamlit web interface
-- **`src/pipeline.py`**: Main processing orchestrator
-- **`src/pii_remover.py`**: Presidio-based PII removal engine
-- **`src/gemini_data_analyzer.py`**: Google Gemini AI integration
-- **`src/helpers.py`**: Content extraction utilities (PDF, PPTX)
-- **`src/generate_ppt.py`**: PowerPoint report generation
-- **`src/patterns/`**: Custom PII recognition patterns -->
-
-<!-- ### Processing Flow by File Type
-
-| File Type  | Extraction                    | PII Removal                    | Analysis                        |
-| ---------- | ----------------------------- | ------------------------------ | ------------------------------- |
-| **Images** | PIL → Image object            | Presidio image redaction       | Gemini vision analysis          |
-| **Excel**  | pandas → DataFrame            | DataFrame anonymization        | Gemini structured data analysis |
-| **PPTX**   | Text/tables/images extraction | Individual content PII removal | Combined multi-modal analysis   |
-| **PDF**    | Text and image extraction     | Separate text/image processing | Unified content analysis        | --> |
-
 ## Configuration
 
 ### Custom PII Patterns
@@ -168,16 +140,6 @@ pii-remover-analyser/
 └── en_core_web_lg-3.8.0-py3-none-any.whl # spaCy model 
 ```
 
-<!-- #### Error Handling
-All processing functions follow structured error handling:
-```python
-try:
-    # Processing logic
-    return {"file_description": {...}, "key_findings": [...]}
-except Exception as e:
-    return {"error": str(e)}
-``` -->
-
 ## Dependencies
 
 ### Core Dependencies
@@ -203,16 +165,6 @@ except Exception as e:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## License
-
-<!-- This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. -->
-<!-- 
-## Related Projects
-
-- [Microsoft Presidio](https://microsoft.github.io/presidio/) - Privacy and PII detection
-- [Google Gemini](https://ai.google.dev/) - AI analysis and insights
-- [Streamlit](https://streamlit.io/) - Web application framework
--->
 ##  Support
 
 For support, issues, or feature requests, please [open an issue](https://github.com/ashishanilsikaria/pii-remover-analyser/issues) on GitHub.
