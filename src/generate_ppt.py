@@ -1,5 +1,6 @@
 import math
 import os
+from io import BytesIO
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.enum.text import PP_ALIGN, MSO_VERTICAL_ANCHOR, MSO_AUTO_SIZE
@@ -7,7 +8,7 @@ from pptx.enum.text import PP_ALIGN, MSO_VERTICAL_ANCHOR, MSO_AUTO_SIZE
 base_dir = os.path.dirname(__file__)
 
 
-def create_presentation(data, output_filename):
+def create_presentation(data):
 
     prs = Presentation()
     prs.slide_width = Inches(10)
@@ -156,4 +157,7 @@ def create_presentation(data, output_filename):
                     p_finding.level = 0
                     p_finding.font.size = Pt(11)
 
-    prs.save(output_filename)
+    buf = BytesIO()
+    prs.save(buf)
+    buf.seek(0)
+    return buf.getvalue()

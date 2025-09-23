@@ -10,18 +10,18 @@ from helpers import my_logger
 from presidio_nlp_engine_config import create_nlp_engine_with_spacy
 
 
-@st.cache_resource
+@st.cache_resource(show_spinner=False)
 def image_redactor_engine():
     return ImageRedactorEngine()
 
 
-@st.cache_resource
+@st.cache_resource(show_spinner=False)
 def analyzer_engine():
     nlp_engine, registry = create_nlp_engine_with_spacy()
     return AnalyzerEngine(nlp_engine=nlp_engine, registry=registry)
 
 
-@st.cache_resource
+@st.cache_resource(show_spinner=False)
 def anonymizer_engine():
     return AnonymizerEngine()
 

@@ -90,10 +90,11 @@ if generate_ppt:
             st.warning("Please upload files before generating PPT.")
             st.stop()
 
-        create_presentation(table_rows_for_ppt, output_filename="analysis_output.pptx")
+        report_dict = create_presentation(table_rows_for_ppt)
+        ppt_bytes = report_dict
         download_button(
             label="Download PPT",
-            data=open("analysis_output.pptx", "rb").read(),
+            data=ppt_bytes,
             file_name="analysis_output.pptx",
             mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
         )
