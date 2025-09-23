@@ -17,7 +17,7 @@ RUN pip3 install --no-cache-dir spacy
 
 RUN python -m spacy download en_core_web_lg
 
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir .
 
 COPY src/ ./src/
 
