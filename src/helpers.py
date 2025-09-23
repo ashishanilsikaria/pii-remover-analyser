@@ -95,8 +95,9 @@ def setup_logger(name, log_file, level=logging.INFO):
     file_handler.setFormatter(formatter)
     console_handler.setFormatter(formatter)
 
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
+    if not logger.handlers:
+        logger.addHandler(file_handler)
+        logger.addHandler(console_handler)
 
     return logger
 
