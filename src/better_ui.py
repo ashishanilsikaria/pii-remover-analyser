@@ -199,7 +199,6 @@ if generate_ppt:
             data=open("analysis_output.pptx", "rb").read(),
             file_name="analysis_output.pptx",
             mime="application/vnd.openxmlformats-officedocument.presentationml.presentation",
-            on_click="ignore",
         )
 
     except Exception as e:
