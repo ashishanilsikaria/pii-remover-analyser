@@ -53,7 +53,7 @@ A sophisticated **Streamlit-based security analysis tool** that automatically re
    
    Or using pip:
    ```bash
-   pip install -r pyproject.toml
+   pip install .
    ```
 
 3. **Set up environment variables**
@@ -70,7 +70,7 @@ A sophisticated **Streamlit-based security analysis tool** that automatically re
    
    Or directly with Streamlit:
    ```bash
-   streamlit run src/streamlit_app.py
+   streamlit run src/better_ui.py
    ```
 
 ## Usage
@@ -88,15 +88,15 @@ A sophisticated **Streamlit-based security analysis tool** that automatically re
 
 4. **View Results**: Review the analysis results and download generated reports
 
-## Architecture
+<!-- ## Architecture
 
 The application follows a **pipeline pattern** with these core components:
 
 ```
-Upload → PII Removal → AI Analysis → Report Generation
+Upload → PII Removal → AI Analysis → Report Generation -->
 ```
 
-### Key Components
+<!-- ### Key Components
 
 - **`main.py`**: Application entry point
 - **`src/streamlit_app.py`**: Streamlit web interface
@@ -105,16 +105,16 @@ Upload → PII Removal → AI Analysis → Report Generation
 - **`src/gemini_data_analyzer.py`**: Google Gemini AI integration
 - **`src/helpers.py`**: Content extraction utilities (PDF, PPTX)
 - **`src/generate_ppt.py`**: PowerPoint report generation
-- **`src/patterns/`**: Custom PII recognition patterns
+- **`src/patterns/`**: Custom PII recognition patterns -->
 
-### Processing Flow by File Type
+<!-- ### Processing Flow by File Type
 
 | File Type  | Extraction                    | PII Removal                    | Analysis                        |
 | ---------- | ----------------------------- | ------------------------------ | ------------------------------- |
 | **Images** | PIL → Image object            | Presidio image redaction       | Gemini vision analysis          |
 | **Excel**  | pandas → DataFrame            | DataFrame anonymization        | Gemini structured data analysis |
 | **PPTX**   | Text/tables/images extraction | Individual content PII removal | Combined multi-modal analysis   |
-| **PDF**    | Text and image extraction     | Separate text/image processing | Unified content analysis        |
+| **PDF**    | Text and image extraction     | Separate text/image processing | Unified content analysis        | --> |
 
 ## Configuration
 
@@ -148,31 +148,27 @@ recognizers:
 pii-remover-analyser/
 ├── main.py                          # Application entry point
 ├── pyproject.toml                   # Dependencies and project configuration
+├── requirements.txt                 # Requirements for installation without uv
 ├── uv.lock                          # Dependency lock file
 ├── src/
-│   ├── streamlit_app.py            # Streamlit web interface
-│   ├── pipeline.py                 # Main processing pipeline
-│   ├── pii_remover.py              # PII removal engine
-│   ├── gemini_data_analyzer.py     # AI analysis integration
-│   ├── helpers.py                  # Content extraction utilities
-│   ├── generate_ppt.py             # Report generation
-│   ├── models.py                   # Data models
-│   ├── presidio_nlp_engine_config.py # Presidio configuration
-│   └── patterns/                   # Custom PII patterns
+│   ├── streamlit_app.py             # Streamlit web interface
+│   ├── better_ui.py                 # Improved interface with caching for better performance
+│   ├── pipeline.py                  # Main processing pipeline
+│   ├── pii_remover.py               # PII removal engine
+│   ├── gemini_data_analyzer.py      # AI analysis integration
+│   ├── helpers.py                   # Content extraction utilities
+│   ├── generate_ppt.py              # Report generation
+│   ├── models.py                    # Data models
+│   ├── presidio_nlp_engine_config.py# Presidio configuration
+│   └── patterns/                    # Custom PII patterns
 │       ├── emp.yaml
 │       └── token.yaml
-└── en_core_web_lg-3.8.0-py3-none-any.whl # spaCy model
+|   └── assets
+|       └── system_design.png        # System design image for ppt generation
+└── en_core_web_lg-3.8.0-py3-none-any.whl # spaCy model 
 ```
 
-### Development Patterns
-
-#### Streamlit Caching
-Use `@st.cache_resource` for expensive operations:
-- `analyzer_engine()` - Presidio analyzer initialization
-- `anonymizer_engine()` - Presidio anonymizer initialization
-- `image_redactor_engine()` - Presidio image redactor initialization
-
-#### Error Handling
+<!-- #### Error Handling
 All processing functions follow structured error handling:
 ```python
 try:
@@ -180,7 +176,7 @@ try:
     return {"file_description": {...}, "key_findings": [...]}
 except Exception as e:
     return {"error": str(e)}
-```
+``` -->
 
 ## Dependencies
 
@@ -210,17 +206,17 @@ except Exception as e:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
+<!-- 
 ## Related Projects
 
 - [Microsoft Presidio](https://microsoft.github.io/presidio/) - Privacy and PII detection
 - [Google Gemini](https://ai.google.dev/) - AI analysis and insights
 - [Streamlit](https://streamlit.io/) - Web application framework
-
+-->
 ##  Support
 
 For support, issues, or feature requests, please [open an issue](https://github.com/ashishanilsikaria/pii-remover-analyser/issues) on GitHub.
 
 ---
 
-**Built with ❤️ by [Ashish Anil Sikaria](https://github.com/ashishanilsikaria)**
+**Built by [Ashish Anil Sikaria](https://github.com/ashishanilsikaria)**
