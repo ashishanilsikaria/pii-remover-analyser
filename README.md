@@ -53,6 +53,8 @@ A sophisticated **Streamlit-based security analysis tool** that automatically re
    
    Or using pip:
    ```bash
+   python -m venv .venv
+   source /.venv/bin/activate
    pip install .
    ```
 
