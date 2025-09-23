@@ -112,7 +112,7 @@ def get_set_go(input_file) -> dict:
                     )
 
                 analyzed_text_json = analyze_ppt_with_gemini(
-                    text, anonymized_df, image_analysis_by_ai
+                    sanitized_text, anonymized_df, image_analysis_by_ai
                 )
 
                 return json.loads(analyzed_text_json)  # type: ignore
@@ -143,7 +143,9 @@ def get_set_go(input_file) -> dict:
                         )
                         image_analysis_by_ai.append(image_analysis_result)
 
-                analyzed_text_json = analyze_pdf_with_gemini(text, image_analysis_by_ai)
+                analyzed_text_json = analyze_pdf_with_gemini(
+                    sanitized_text, image_analysis_by_ai
+                )
 
                 return json.loads(analyzed_text_json)  # type: ignore
 
