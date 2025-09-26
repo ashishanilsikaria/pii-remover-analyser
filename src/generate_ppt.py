@@ -22,7 +22,7 @@ def create_presentation(data):
     subtitle.text = (  # type: ignore
         "Case Study Solution Presentation"
         "\nGroup Number: 45"
-        "\nTeam Members: Ashish, Aryan, Alok, Monisha, Anamika"
+        "\nTeam Members: Ashish, John, Jane, Doe"
     )
 
     slide_layout_content = prs.slide_layouts[1]
