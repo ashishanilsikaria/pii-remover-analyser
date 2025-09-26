@@ -61,8 +61,6 @@ def extract_content_from_pdf(file):
             for image_file_object in page.images:
                 content["images"].append(image_file_object.data)
 
-        # st.image(content["images"][0], caption="Extracted Image", width="content")
-        # my_logger.info(f"Extracted {type(content['images'][0])} images from PDF.")
 
         return content
     except Exception as e:
@@ -77,9 +75,7 @@ def list_to_html_ol(cell):
 
 
 def setup_logger(name, log_file, level=logging.INFO):
-    """
-    Sets up a logger that writes to a specified file and the console.
-    """
+
     logger = logging.getLogger(name)
     logger.setLevel(level)
 
