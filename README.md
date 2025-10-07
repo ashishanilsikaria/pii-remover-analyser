@@ -34,8 +34,7 @@ A sophisticated **Streamlit-based security analysis tool** that automatically re
 
 ## System Design
 
-![Simple flow of file](./src/assets/system_design.png "Flow")
-
+![Simple flow of file](./public/system_design.png "Flow")
 
 ## Quick Start
 
