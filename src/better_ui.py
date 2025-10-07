@@ -9,7 +9,10 @@ from generate_ppt import create_presentation
 
 st.set_page_config(page_title="File Analyser", layout="wide")
 st.title("PII remover and analyser")
-
+st.page_link(
+    "https://github.com/ashishanilsikaria/pii-remover-analyser",
+    label="GitHub Repo",
+)
 
 uploaded_files = st.file_uploader(
     "Upload files (.png, .jpg, .pdf, .xlsx, .pptx)",

@@ -17,6 +17,13 @@ if not GEMINI_API_KEY:
     if "GEMINI_API_KEY" in st.session_state:
         GEMINI_API_KEY = st.session_state.GEMINI_API_KEY
     else:
+        st.set_page_config(page_title="File Analyser", layout="wide")
+        st.title("PII remover and analyser")
+        st.page_link(
+            "https://github.com/ashishanilsikaria/pii-remover-analyser",
+            label="GitHub Repo",
+        )
+
         st.sidebar.warning("Gemini API Key Required")
         api_key_input = st.sidebar.text_input(
             "Enter your Gemini API Key:",

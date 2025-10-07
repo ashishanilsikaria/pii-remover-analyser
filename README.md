@@ -32,6 +32,11 @@ A sophisticated **Streamlit-based security analysis tool** that automatically re
 - **Interactive UI**: Real-time processing status and results visualization
 - **Detailed Logging**: Comprehensive error handling and debugging information
 
+## System Design
+
+![Simple flow of file](./src/assets/system_design.png "Flow")
+
+
 ## Quick Start
 
 ### Prerequisites
